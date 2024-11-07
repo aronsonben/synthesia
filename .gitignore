@@ -3,6 +3,9 @@
 
 # Not needed
 node_modules/
+dist
+dist-ssr
+*.local
 
 # Personal/temporary files, ignore this
 .DS_Store
