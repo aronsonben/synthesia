@@ -4,15 +4,26 @@ import { hsvaToHex } from '@uiw/color-convert';
 import { useNavigate } from 'react-router-dom';
 import { UniverseButton } from '../Components';
 import { GetColorName } from 'hex-color-to-color-name';
+import { createClient } from "@supabase/supabase-js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Navbar from '../Navbar';
 import '../StoUniverse.css';
 import '../Color.css';
 // import '@wcj/dark-mode';
 
+// Setting up environment variables
 const S3_URL = "https://s3.amazonaws.com/dropcolumn.com/flexonem/";
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  throw new Error('Missing Supabase environment variables')
+}
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 const TrackAudio = ({track}) => {
+  console.log("PRING TING", track);
   return (
     <div className="TrackAudio">
       <audio controls src={track.link}></audio>
@@ -24,15 +35,31 @@ const TrackAudio = ({track}) => {
 const Color = () => {
   const [hsva, setHsva] = useState({ h: 226, s: 29, v: 68, a: 1 });
   const [textColor, setTextColor] = useState({ h: 226, s: 29, v: 100, a: 1 });
-  const [trackID, setTrackID] = useState(1);
   const [thisTrack, setThisTrack] = useState({});
-  const [trackDB, setTrackDB] = useState({});
+  const [tracks, setTracks] = useState([]);
+  const [trackID, setTrackID] = useState(1);
+  const [currentTrackOrder, setCurrentTrackOrder] = useState(1);
   const navigate = useNavigate();
 
   let colorText = {"color": textColor};
 
   useEffect(() => {
-    let ignore = false;
+    // TODO: test internet connection?
+    // Supabase implementation
+    getTracks().then(tracks => {
+      console.log('FOUND: ');
+      console.log(tracks);
+      setThisTrack(tracks[0]);
+      setTrackID(tracks[0]['id']);
+      setCurrentTrackOrder(tracks[0]['track_order']);
+    }).catch(() => {
+      console.log('ERROR: Could not connect to database (Supabase)');
+      // On error, pre-fill with sample database
+      initialPopulate();
+    });
+
+    // Pre-supabase:
+    /* let ignore = false;
     initialPopulate();
     setTrackDB({});
     setThisTrack({});
@@ -44,8 +71,16 @@ const Color = () => {
     });
     return () => {
       ignore = true;
-    };
+    }; */
   }, []);
+
+  async function getTracks() {
+    const { data } = await supabase.from("tracks").select().order('track_order');
+    console.log("getting tracks...:");
+    console.log(data);
+    setTracks(data);
+    return data;
+  }
 
   /** onSubmit:
    * - save new hex to current trackID
@@ -70,8 +105,43 @@ const Color = () => {
     } else {
       // Otherwise, go to final review page
       console.log('redir');
-      navigate("/palettes");
+      navigate("/synthesia/palettes");
     }
+  }
+
+  /** submitColor function modified to work with supabase */
+  async function submitColorSupa(hex) {
+    console.log("submiting: ",hex);
+    // Fetch data
+    // tracks
+    // Get color array for current track
+    const { data, error } = await supabase.from('tracks').select().eq('id', trackID);
+    let trackColors = data[0]["colors"];
+    // Add new hex to color array
+    trackColors.push(hex);
+    // Update colors array for current track with new hex:
+    const updatedData = updateColors(trackID, trackColors);
+    // Get count of tracks
+    const { count, ctError } = await supabase.from('tracks').select('*', { count: 'exact', head: true });
+    console.log('count', count);
+    // Check that we're not at the end of the tracklist
+    if(currentTrackOrder <= count) {
+      // If so, change to next trackID
+      nextTrack(currentTrackOrder + 1);
+    } else {
+      // Otherwise, go to final review page
+      console.log('redir');
+      navigate("/synthesia/palettes");
+    }
+  }
+
+  async function updateColors(id, newColors) {
+    const { data, error } = await supabase
+      .from('tracks')
+      .update({ colors: newColors })
+      .eq('id', id)
+      .select();
+    return data;
   }
 
   /** Prepare next track question:
@@ -79,16 +149,27 @@ const Color = () => {
    * - Fetch next track data
    * - Reset color
    */
-  function nextTrack(nextID) {
-    setTrackID(nextID);
-    setThisTrack(trackDB[nextID]);
+  async function nextTrack(nextID) {
+    // Check if nextID exists??
+    console.log(nextID);
+    const { data, error } = await supabase.from("tracks").select().eq("track_order", nextID).limit(1);
+    console.log(data);
+    setTrackID(data[0]['id']);
+    setCurrentTrackOrder(data[0]['track_order']);
+    setThisTrack(data[0]);
+    // Pre-supa
+    // setTrackID(nextID);
+    // setThisTrack(trackDB[nextID]);
     setHsva({ h: 226, s: 29, v: 68, a: 1 });
   }
 
-  function selectTrack(trackID) {
-    console.log(trackID);
-    setTrackID(trackID);
-    setThisTrack(trackDB[trackID]);
+  async function selectTrack(track) {
+    const { data, error } = await supabase.from("tracks").select().eq("track_order", track.track_order).limit(1);
+    const nuTrack = data[0];
+    setTrackID(nuTrack.id);
+    setCurrentTrackOrder(nuTrack.track_order);
+    setThisTrack(nuTrack);
+    console.log("set: ", nuTrack);
     setHsva({ h: 226, s: 29, v: 68, a: 1 });
   }
 
@@ -177,7 +258,7 @@ const Color = () => {
             </div>
           </div>
         </div>
-        <button className="ColorSubmit" onClick={() => submitColor(hsvaToHex(hsva))}>SUBMIT</button>
+        <button className="ColorSubmit" onClick={() => submitColorSupa(hsvaToHex(hsva))}>SUBMIT</button>
         {(process.env.NODE_ENV == 'development') ? 
           (<>
             <button onClick={getData}>show</button>
@@ -185,17 +266,29 @@ const Color = () => {
             <button onClick={initialPopulate}>populate</button>
           </>) : null }
         <div className="FormProgress">
-          {Object.keys(trackDB).map(keyID => {
-            return (
-              <span 
-                className={trackID == keyID ? "BoldID TrackNav" : "TrackNav"}
-                key={keyID} 
-                onClick={() => selectTrack(keyID)}>
-                  {keyID}
-              </span>
-            );
-          })}
-          <button className="TrackNav" onClick={() => navigate("color")}>restart</button>
+          {currentTrackOrder >= 4 ? (<span>...</span>) : null}
+          {
+            (tracks.filter((track) => 
+              track.track_order > currentTrackOrder-3 && track.track_order < currentTrackOrder+3
+            )).map(track => {
+              {/* console.log("PRINTING FILTERED...", track) */}
+              if(track.track_order != 0) {
+                return (
+                  <span 
+                    className={currentTrackOrder == track.track_order ? "BoldID TrackNav" : "TrackNav"}
+                    key={track.track_order} 
+                    onClick={() => selectTrack(track)}
+                  >
+                      {track.track_order}
+                  </span>
+                );
+              } else return null;
+            })
+          }
+          {currentTrackOrder <= 18 ? (<span>...</span>) : null}
+          <div>
+            <button onClick={() => navigate('/synthesia/palettes')}>palettes</button>
+          </div>
         </div>
       </div>
     </div>

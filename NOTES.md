@@ -43,11 +43,24 @@ What is preventing me from saying this look good enough to go?
 - [ x ] home btn on palette screen
 - [ x ] white bounding box stretches to full screen
 
-#### v0.0.2
-- [ ] Home page is immediately synthesia
-- [ ] Palettes are saved to a single database
-- [ ] Remove dev buttons
+#### v0.0.2a *(supabase conversion)*
+- [ x ] All songs added to AWS S3
+- [ x ] All songs added to supabase
+- [ x ] Convert main functions from AsyncStorage to supabase
+
+#### v0.0.2b *(supabase conversion)*
+- [ x ] Fix navigation on color picker (pagination?) *mehhhh half-fixed...*
+- [ x ] Ensure each song lines up with its title/id in the picker
+
+#### v0.0.2c
+- [ x ] Home page is ~~immediately synthesia~~ a welcome page to synthesia
+- [ x ] All songs are added to be listened to
+- [ x ] Palettes are saved to a single database
+- [ ] Remove dev buttons on palettes page
 - [ ] Improved navigation
+
+#### v0.0.3
+- [ ] Move tracklist to a simple list on side instead of pagination
 
 ### Future
 [ ] Test that this works online

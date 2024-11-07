@@ -1,1 +1,12 @@
+# Def never commit these
+.env
+
+# Not needed
 node_modules/
+
+# Personal/temporary files, ignore this
+.DS_Store
+db_cluster-20-05-2024@11-18-08.backup
+db_cluster-20-05-2024@11-18-08.backup.gz
+dist/assets/index-63BfQeXy.js
+tjojaygamnzkipjsrnab.storage.zip

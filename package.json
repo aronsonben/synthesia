@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.22.3",
+    "@supabase/supabase-js": "^2.43.0",
     "@uiw/react-color": "^2.0.6",
     "@wcj/dark-mode": "^1.0.16",
     "firebase": "^10.8.1",

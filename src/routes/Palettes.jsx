@@ -1,11 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { hexToRgba, hexToHsva, hsvaToHsla, hslaToHsl } from '@uiw/color-convert';
+import { createClient } from "@supabase/supabase-js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Navbar from '../Navbar';
 import '../StoUniverse.css';
 
+// Set up env variables
 const S3_URL = "https://s3.amazonaws.com/dropcolumn.com/flexonem/";
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  throw new Error('Missing Supabase environment variables')
+}
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 /**
  * Color block object, a small square filled with the chosen color
@@ -159,10 +169,20 @@ const TrackPalette = ({track, colorKey}) => {
 const Palettes = () => {
   const [thisTrack, setThisTrack] = useState({});
   const [trackDB, setTrackDB] = useState({});
+  const [tracks, setTracks] = useState([]);
+  const [trackID, setTrackID] = useState(1);
+  const [currentTrackOrder, setCurrentTrackOrder] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
-    let ignore = false;
+    getTracks().then(tracks => {
+      console.log('FOUND: ');
+      console.log(tracks);
+      setThisTrack(tracks[0]);
+      setTrackID(tracks[0]['id']);
+      setCurrentTrackOrder(tracks[0]['track_order']);
+    });
+    /* let ignore = false;
     getData().then(result => {
       if (!ignore) {
         setTrackDB(result);
@@ -171,8 +191,16 @@ const Palettes = () => {
     });
     return () => {
       ignore = true;
-    };
+    }; */
   }, []);
+
+  async function getTracks() {
+    const { data } = await supabase.from("tracks").select().order('track_order');
+    console.log("getting tracks...:");
+    console.log(data);
+    setTracks(data);
+    return data;
+  }
 
   async function getData() {
     try {
@@ -200,8 +228,27 @@ const Palettes = () => {
     }
   }
 
-  async function clearDB() {
-    storeData({});
+  /**
+   * Admin function to clear the colors from all palettes (except for base white)
+   */
+  async function clearColors() {
+    // For each track in tracks list
+    tracks.map(track => {
+      let trackColors = track.colors;
+      let resetColors = ["#ffffff"];
+      // Update colors array for current track with new hex:
+      const updatedData = updateColors(track.id, resetColors);
+      console.log("updated...");
+    });
+  }
+
+  async function updateColors(id, newColors) {
+    const { data, error } = await supabase
+      .from('tracks')
+      .update({ colors: newColors })
+      .eq('id', id)
+      .select();
+    return data;
   }
 
 
@@ -211,19 +258,21 @@ const Palettes = () => {
       <h1>🎨 palettes</h1>
       <h2>all</h2>
       <div className="PaletteDisplay">
-        {Object.keys(trackDB).map(key => {
+        {Object.keys(tracks).map(key => {
           return(
             <div key={"track"+key}>
-              <TrackPalette track={trackDB[key]} colorKey={"track"+key} />
+              <TrackPalette track={tracks[key]} colorKey={"track"+key} />
             </div>
           );
         })}
       </div>
-      <button onClick={getData}>show</button>
-      <button onClick={clearDB}>clear</button>
-      <hr />
-      <button onClick={initialPopulate}>populate</button>
-      <button onClick={() => navigate("/color")}>restart</button>
+      {(process.env.NODE_ENV == 'development') ? 
+        (<>
+          <button onClick={() => clearColors()}>clear colors</button>
+          <hr />
+          <button onClick={initialPopulate}>populate</button>
+          <button onClick={() => navigate("/synthesia/color")}>restart</button>
+        </>) : null }
     </div>
   );
 };

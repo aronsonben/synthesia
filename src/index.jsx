@@ -20,7 +20,7 @@ import ErrorPage from './ErrorPage';
 const router = createBrowserRouter([
   {
     path: "/synthesia/",
-    element: <Home />,
+    element: <Color />,
     errorElement: <ErrorPage />,
   },
   {
@@ -28,12 +28,13 @@ const router = createBrowserRouter([
     element: <Color />,
   },
   {
-    path: "enter",
-    element: <EnterSto />,
+    path: "/synthesia/palettes/",
+    element: <Palettes />,
+    errorElement: <ErrorPage />,
   },
   {
-    path: "/palettes/",
-    element: <Palettes />,
+    path: "enter",
+    element: <EnterSto />,
   },
   {
     path: "/music/",

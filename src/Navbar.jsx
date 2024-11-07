@@ -8,7 +8,7 @@ const Navbar = () => {
 
   return (
     <div className="Navbar">
-        <span onClick={() => navigate("/")}>eject</span>
+        <span onClick={() => navigate("/synthesia/")}>eject</span>
     </div>
   );
 };
