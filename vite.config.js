@@ -2,8 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: './',
-  rewrites: [{ "source": "/(.*)", "destination": "/index.html" }],
+  base: './synthesia/',
   plugins: [react()],
   test: {
     globals: true,
