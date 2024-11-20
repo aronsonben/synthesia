@@ -9,24 +9,8 @@ const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1 className="App-link">
-          ENTER
-        </h1>
-        <span style={{background: '#4a464c'}}> 💫 </span>
-        <a
-          className="smol-link App-link"
-          href="https://dropcolumn.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          ← DCWW Global HQ
-        </a>
-        <p>
-          <a className="App-link" href={`/enter`}>
-            <b>sto's universe →</b>
-          </a>
-        </p>
-        <a className="App-link" href={`/color`}>colors</a>
+        <a className="App-link" href={`/synthesia`}>synthesia</a>
+        <p style={{"font-size": "13px", "text-decoration": "underline"}}>start new synthesia set (coming soon)</p>
       </header>
     </div>
   );

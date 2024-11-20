@@ -32,10 +32,24 @@ const TrackAudio = ({track}) => {
   );
 }
 
+/**
+ * Color block object, a small square filled with the chosen color
+ */
+const ColorBlock = ({hex, colorKey}) => {
+  return (
+    <div className="PaletteDisplay">
+      <div className="ColorBlockSide" style={{background: hex}} key={colorKey}>
+        <span></span>
+      </div>
+    </div>
+  )
+}
+
 const Color = () => {
   const [hsva, setHsva] = useState({ h: 226, s: 29, v: 68, a: 1 });
   const [textColor, setTextColor] = useState({ h: 226, s: 29, v: 100, a: 1 });
   const [thisTrack, setThisTrack] = useState({});
+  const [sessionColors, setSessionColors] = useState({});
   const [tracks, setTracks] = useState([]);
   const [trackID, setTrackID] = useState(1);
   const [currentTrackOrder, setCurrentTrackOrder] = useState(1);
@@ -119,6 +133,7 @@ const Color = () => {
     let trackColors = data[0]["colors"];
     // Add new hex to color array
     trackColors.push(hex);
+    sessionColors[trackID] = hex;
     // Update colors array for current track with new hex:
     const updatedData = updateColors(trackID, trackColors);
     // Get count of tracks
@@ -126,7 +141,7 @@ const Color = () => {
     console.log('count', count);
     // Check that we're not at the end of the tracklist
     if(currentTrackOrder <= count) {
-      // If so, change to next trackID
+      // If not, change to next trackID
       nextTrack(currentTrackOrder + 1);
     } else {
       // Otherwise, go to final review page
@@ -227,8 +242,31 @@ const Color = () => {
 
   return (
     <div className="Universe" id="enter" style={{ background: hsvaToHex(hsva) }}>
-      <Navbar />
-      {/* <dark-mode permanent light="Light" dark="Dark"></dark-mode> */}
+      <div className="trackTable">
+        <h4><i>Tracklist</i></h4>
+        <ol className="sideTrackList">
+          {
+            tracks.map((track) => {
+              return(
+                <li 
+                  className={currentTrackOrder == track.track_order ? "selectedTrack" : ""}
+                  key={track.track_order} 
+                  onClick={() => selectTrack(track)}
+                  >
+                  <div className="trackListItem">
+                    {track.title}
+                    <ColorBlock
+                      hex={ (sessionColors[track.id]) ? (sessionColors[track.id]) : "#ffffff" } 
+                      colorKey={"1"} 
+                      key={"1"} />
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ol>
+        <button onClick={() => navigate('/synthesia/palettes')}>palettes</button>
+      </div>
       <div className="ColorHolder">
         <h1>synthesia</h1>
         <h4><i>What does this sound look like?</i></h4>
@@ -265,7 +303,7 @@ const Color = () => {
             <button onClick={clearDB}>clear</button>
             <button onClick={initialPopulate}>populate</button>
           </>) : null }
-        <div className="FormProgress">
+        <div className="FormProgress" style={{"display": "none"}}>
           {currentTrackOrder >= 4 ? (<span>...</span>) : null}
           {
             (tracks.filter((track) => 

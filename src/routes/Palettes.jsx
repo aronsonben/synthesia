@@ -253,10 +253,8 @@ const Palettes = () => {
 
 
   return (
-    <div className="Universe" id="enter">
-      <Navbar />
+    <div className="Universe Palettes" id="enter">
       <h1>🎨 palettes</h1>
-      <h2>all</h2>
       <div className="PaletteDisplay">
         {Object.keys(tracks).map(key => {
           return(

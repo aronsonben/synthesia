@@ -109,6 +109,39 @@
 .PaletteDisplay {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.trackTable {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 3px double #57545a;
+  border-radius: 15px;
+  padding: 15px;
+  max-height: 100vh;
+}
+
+.trackTable h4 {
+  text-decoration: underline;
+}
+
+.trackListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 5px;
+}
+
+.sideTrackList li {
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 5px 0;
+}
+
+.selectedTrack {
+  border: 1px solid black;
+  text-decoration: none;
 }
 
 .ColorBlock {
@@ -116,6 +149,11 @@
   height: 15px;
   margin: 5px; */
   font-size: 8px;
+}
+
+.ColorBlockSide {
+  width: 20px;
+  height: 20px;
 }
 
 .TrackNav {

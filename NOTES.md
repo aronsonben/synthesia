@@ -56,11 +56,14 @@ What is preventing me from saying this look good enough to go?
 - [ x ] Home page is ~~immediately synthesia~~ a welcome page to synthesia
 - [ x ] All songs are added to be listened to
 - [ x ] Palettes are saved to a single database
-- [ ] Remove dev buttons on palettes page
-- [ ] Improved navigation
+- [ - ] Remove dev buttons on palettes page
+- [ - ] Improved navigation
 
 #### v0.0.3
+*Begin moving tracking to Notion*
 - [ ] Move tracklist to a simple list on side instead of pagination
+- [ ] Remove dev buttons on palettes page
+- [ ] Improved navigation
 
 ### Future
 [ ] Test that this works online

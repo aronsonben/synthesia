@@ -1,13 +1,12 @@
 .Universe {
+  display: flex;
+	align-items: center;
+	justify-content: center;
+  text-align: center;
   min-height: 100vh;
   padding: 0 10em;
   background-color: #ddd5e4;
 	color: black;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-  text-align: center;
 	font-size: calc(8px + 1vmin);
   font-family: 'Courier New', Courier, monospace;
 }
@@ -25,6 +24,11 @@
   cursor: pointer;
   font-size: large;
   padding: 10px 0;
+}
+
+.Palettes {
+  display: flex;
+  flex-direction: column;
 }
 
 .Transmission {

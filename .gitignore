@@ -8,6 +8,7 @@ dist-ssr
 *.local
 
 # Personal/temporary files, ignore this
+synthesia.code-workspace
 .DS_Store
 db_cluster-20-05-2024@11-18-08.backup
 db_cluster-20-05-2024@11-18-08.backup.gz
