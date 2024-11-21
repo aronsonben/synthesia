@@ -165,6 +165,32 @@
   cursor: pointer;
 }
 
+.mobileNav {
+  margin: 0 1rem;
+  font-style: italic;
+  font-size: 1rem;
+  text-decoration: underline;
+  border: none;
+}
+
+.disabledMobileNav {
+  margin: 0 1rem;
+  font-style: italic;
+  font-size: 1rem;
+  text-decoration: underline;
+  border: none;
+  opacity: 25%;
+}
+
+/* **** MEDIA QUERIES **** */
+@media (max-width: 768px) {
+  .trackTable { 
+    display: none;
+  }
+}
+
+/* I have no idea what is going on down here... (11/20/24) */
+
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
   .Universe {

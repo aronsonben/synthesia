@@ -1,4 +1,5 @@
 # A dropcolumn.com Reboot?
+# **WARNING: This page not updated since early 2024 (this note added Nov. 20, 2024)**
 
 Who knows, I never finish things anyways. This particular iteration is intended to flesh out the idea of "synthesia", which is a tool for letting people select a color based on the song that is playing. The idea is to end up with a color pallette of what people think the song "looks like".
 
@@ -7,6 +8,7 @@ Who knows, I never finish things anyways. This particular iteration is intended 
 Navigate to "[http](http://localhost:3000/color)" to view this when the app is running in the dev environment.
 
 ### What's Left?
+
 What is preventing me from saying this look good enough to go? 
 
 - ✅ Submit - submit button needs to actually work with a backend storing the hex somewhere
@@ -24,7 +26,6 @@ What is preventing me from saying this look good enough to go?
 3. Enable submit hex color
 4. Submit goes to next track
 5. At end, show final page with results
-
 
 ## Development Versions
 
@@ -69,6 +70,3 @@ What is preventing me from saying this look good enough to go?
 [ ] Test that this works online
 [ ] Navbar at top
 [ ] Nav back to home or colors at palettes
-
-
-## Helpful Links

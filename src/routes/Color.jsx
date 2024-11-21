@@ -53,6 +53,7 @@ const Color = () => {
   const [tracks, setTracks] = useState([]);
   const [trackID, setTrackID] = useState(1);
   const [currentTrackOrder, setCurrentTrackOrder] = useState(1);
+  const [showDevTools, setShowDevTools] = useState(true);
   const navigate = useNavigate();
 
   let colorText = {"color": textColor};
@@ -268,6 +269,22 @@ const Color = () => {
         <button onClick={() => navigate('/synthesia/palettes')}>palettes</button>
       </div>
       <div className="ColorHolder">
+        {
+          (process.env.NODE_ENV == 'development') ?
+            (
+              <div className="devTools" style={{"display": "flex", "flex-direction": "column", "width": "25%", "margin": "0 auto"}}>
+                <button onClick={() => setShowDevTools(!showDevTools)}>dev tools</button>
+                {(showDevTools) ? 
+                    (<>
+                      <button onClick={getData}>show</button>
+                      <button onClick={clearDB}>clear</button>
+                      <button onClick={initialPopulate}>populate</button>
+                    </>) 
+                  : (<></>)
+                }
+                </div>
+            ) : (<></>)
+        }
         <h1>synthesia</h1>
         <h4><i>What does this sound look like?</i></h4>
         <div className="ColorBox">
@@ -296,20 +313,15 @@ const Color = () => {
             </div>
           </div>
         </div>
+        <button className={(currentTrackOrder >= 1) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder >= 1) ? nextTrack(currentTrackOrder - 1) : ''}>{'<'} Previous</button>
         <button className="ColorSubmit" onClick={() => submitColorSupa(hsvaToHex(hsva))}>SUBMIT</button>
-        {(process.env.NODE_ENV == 'development') ? 
-          (<>
-            <button onClick={getData}>show</button>
-            <button onClick={clearDB}>clear</button>
-            <button onClick={initialPopulate}>populate</button>
-          </>) : null }
+        <button className={(currentTrackOrder <= tracks.length) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder <= tracks.length) ? nextTrack(currentTrackOrder + 1) : ''}>Next {'>'}</button>
         <div className="FormProgress" style={{"display": "none"}}>
           {currentTrackOrder >= 4 ? (<span>...</span>) : null}
           {
             (tracks.filter((track) => 
               track.track_order > currentTrackOrder-3 && track.track_order < currentTrackOrder+3
             )).map(track => {
-              {/* console.log("PRINTING FILTERED...", track) */}
               if(track.track_order != 0) {
                 return (
                   <span 
