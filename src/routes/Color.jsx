@@ -22,15 +22,34 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-const TrackAudio = ({track}) => {
-  console.log("PRING TING", track);
+const TrackAudio = ({ track }) => {
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    const audioElement = audioRef.current;
+
+    const handleTimeUpdate = () => {
+      if (audioElement.currentTime >= 30) {
+        audioElement.pause();
+        audioElement.currentTime = 0; // Optionally reset to the beginning
+      }
+    };
+
+    audioElement.addEventListener('timeupdate', handleTimeUpdate);
+
+    return () => {
+      audioElement.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+  }, []);
+
   return (
     <div className="TrackAudio">
-      <audio controls src={track.link}></audio>
+      <audio ref={audioRef} controls controlslist="nodownload noplaybackrate" src={track.link}></audio>
+      <span style={{"fontSize": "10px"}}><i>*30sec snippet</i></span>
       <p>{track.title}</p>
     </div>
   );
-}
+};
 
 /**
  * Color block object, a small square filled with the chosen color
@@ -141,7 +160,7 @@ const Color = () => {
     const { count, ctError } = await supabase.from('tracks').select('*', { count: 'exact', head: true });
     console.log('count', count);
     // Check that we're not at the end of the tracklist
-    if(currentTrackOrder <= count) {
+    if(currentTrackOrder < count) {
       // If not, change to next trackID
       nextTrack(currentTrackOrder + 1);
     } else {
@@ -289,7 +308,7 @@ const Color = () => {
         <h4><i>What does this sound look like?</i></h4>
         <div className="ColorBox">
           <div className="TextShiftLeft">
-            <p className="TextBubble TBLeft">listen to this song...</p>
+            <p className="TextBubble TBLeft">listen to this song snippet...</p>
           </div>
           <TrackAudio track={thisTrack} />
         </div>
@@ -313,31 +332,32 @@ const Color = () => {
             </div>
           </div>
         </div>
-        <button className={(currentTrackOrder >= 1) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder >= 1) ? nextTrack(currentTrackOrder - 1) : ''}>{'<'} Previous</button>
-        <button className="ColorSubmit" onClick={() => submitColorSupa(hsvaToHex(hsva))}>SUBMIT</button>
-        <button className={(currentTrackOrder <= tracks.length) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder <= tracks.length) ? nextTrack(currentTrackOrder + 1) : ''}>Next {'>'}</button>
+        <div className="navButtons">
+          <button className={(currentTrackOrder >= 1) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder >= 1) ? nextTrack(currentTrackOrder - 1) : ''}>{'<'} Previous</button>
+          <button className="ColorSubmit" onClick={() => submitColorSupa(hsvaToHex(hsva))}>SUBMIT</button>
+          <button className={(currentTrackOrder <= tracks.length) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder <= tracks.length) ? nextTrack(currentTrackOrder + 1) : ''}>Next {'>'}</button>
+        </div>
+        <button onClick={() => navigate('/synthesia/palettes')}>Finish (go to palettes)</button>
         <div className="FormProgress" style={{"display": "none"}}>
           {currentTrackOrder >= 4 ? (<span>...</span>) : null}
           {
-            (tracks.filter((track) => 
-              track.track_order > currentTrackOrder-3 && track.track_order < currentTrackOrder+3
-            )).map(track => {
-              if(track.track_order != 0) {
-                return (
+            tracks
+              .filter(({ track_order }) => track_order > currentTrackOrder - 3 && track_order < currentTrackOrder + 3)
+              .map(({ track_order }) => 
+                track_order !== 0 ? (
                   <span 
-                    className={currentTrackOrder == track.track_order ? "BoldID TrackNav" : "TrackNav"}
-                    key={track.track_order} 
+                    className={currentTrackOrder === track_order ? "BoldID TrackNav" : "TrackNav"}
+                    key={track_order} 
                     onClick={() => selectTrack(track)}
                   >
-                      {track.track_order}
+                    {track_order}
                   </span>
-                );
-              } else return null;
-            })
+                ) : null
+              )
           }
           {currentTrackOrder <= 18 ? (<span>...</span>) : null}
           <div>
-            <button onClick={() => navigate('/synthesia/palettes')}>palettes</button>
+            <button onClick={() => navigate('/synthesia/palettes')}>Finish (go to palettes)</button>
           </div>
         </div>
       </div>

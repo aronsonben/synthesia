@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { hexToRgba, hexToHsva, hsvaToHsla, hslaToHsl } from '@uiw/color-convert';
 import { createClient } from "@supabase/supabase-js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Navbar from '../Navbar';
+import '../Color.css';
 import '../StoUniverse.css';
 
 // Set up env variables
@@ -23,8 +23,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 const ColorBlock = ({hex, colorKey}) => {
   return (
     <div className="PaletteDisplay">
-      <div className="ColorBlock" style={{background: hex}} key={colorKey}>
-        <p style={{color: hex}}>{hex}</p>
+      <div className="ColorBlockSide" style={{background: hex}} key={colorKey}>
+        <span></span>
       </div>
     </div>
   )
@@ -153,9 +153,9 @@ const TrackPalette = ({track, colorKey}) => {
   }
 
   return (
-    <div>
-      <p>{track.title}</p>
-      <div className="AllPalettes">
+    <div className="colorPalettePalettePage">
+      <div className="paletteTrackTitle"><p>{track.title}</p></div>
+      <div className="paletteColorBlocks">
         {track.colors.map(hex => {
           return(
             <ColorBlock hex={hex} colorKey={colorKey+hex} key={colorKey+hex} />
@@ -172,6 +172,7 @@ const Palettes = () => {
   const [tracks, setTracks] = useState([]);
   const [trackID, setTrackID] = useState(1);
   const [currentTrackOrder, setCurrentTrackOrder] = useState(1);
+  const [showDevTools, setShowDevTools] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -255,22 +256,32 @@ const Palettes = () => {
   return (
     <div className="Universe Palettes" id="enter">
       <h1>🎨 palettes</h1>
-      <div className="PaletteDisplay">
+      <div className="allPalettes">
         {Object.keys(tracks).map(key => {
           return(
-            <div key={"track"+key}>
-              <TrackPalette track={tracks[key]} colorKey={"track"+key} />
-            </div>
+            <TrackPalette key={"track"+key} track={tracks[key]} colorKey={"track"+key} />
           );
         })}
       </div>
-      {(process.env.NODE_ENV == 'development') ? 
-        (<>
-          <button onClick={() => clearColors()}>clear colors</button>
-          <hr />
-          <button onClick={initialPopulate}>populate</button>
-          <button onClick={() => navigate("/synthesia/color")}>restart</button>
-        </>) : null }
+      <button onClick={() => navigate("/synthesia/color")}>restart</button>
+      <hr />
+      {
+          (process.env.NODE_ENV == 'development') ?
+            (
+              <div className="devTools" style={{"display": "flex", "flex-direction": "column", "width": "25%", "margin": "0 auto"}}>
+                <button onClick={() => setShowDevTools(!showDevTools)}>dev tools</button>
+                <hr />
+                {(showDevTools) ? 
+                    (<>
+                      <button onClick={() => clearColors()}>clear colors</button>
+                      <hr />
+                      <button onClick={initialPopulate}>populate</button>
+                    </>) 
+                  : (<></>)
+                }
+                </div>
+            ) : (<></>)
+        }
     </div>
   );
 };

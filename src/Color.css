@@ -72,6 +72,11 @@
   padding: 5px 10px;
 }
 
+.TrackAudio {
+  display: flex;
+  flex-direction: column;
+}
+
 .ColorSubmit {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1rem;
@@ -100,10 +105,45 @@
   font-weight: bold;
 }
 
-.AllPalettes {
+.colorBlocks {
   display: flex;
   margin: 15px;
   flex-wrap: wrap;
+}
+
+.allPalettes {
+  width: 50vw;
+}
+
+.colorPalettePalettePage {
+  display: flex;
+  flex-direction: row;
+  border-radius: 15px;
+  padding: 5px;
+  margin: 5px 0;
+  max-height: 100vh;
+  gap: 10px;
+}
+
+.paletteTrackTitle {
+  display: flex;
+  padding: 0 10px;
+  width: 40%;
+  border: 1px solid black;
+}
+
+.paletteTrackTitle p {
+  overflow: auto;
+  overflow-wrap: break-word;
+}
+
+.paletteColorBlocks {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 15px;
+  border: 1px solid black;
+  max-width: 40%;
+  width: 40%;
 }
 
 .PaletteDisplay {
@@ -136,7 +176,7 @@
 .sideTrackList li {
   text-decoration: underline;
   cursor: pointer;
-  padding: 5px 0;
+  font-size: 1rem;
 }
 
 .selectedTrack {
@@ -165,10 +205,14 @@
   cursor: pointer;
 }
 
+.navButtons {
+  display: flex;
+  justify-content: space-between;
+}
+
 .mobileNav {
-  margin: 0 1rem;
   font-style: italic;
-  font-size: 1rem;
+  font-size: calc(1rem - 3px);
   text-decoration: underline;
   border: none;
 }
@@ -187,6 +231,9 @@
   .trackTable { 
     display: none;
   }
+  .allPalettes {
+    width: 80vw;
+  }
 }
 
 /* I have no idea what is going on down here... (11/20/24) */
@@ -200,6 +247,7 @@
   .ColorHolder {
     width: 80%;
   }
+
 }
 
 /* Medium devices (tablets, 768px and up) */

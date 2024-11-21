@@ -1,7 +1,6 @@
 .App {
   font-family: 'Courier New', Courier, monospace;
-  background-color: #ddd5e4;
-  /* background-color: #4a464c; */
+  /* background-color: #ddd5e4; */
   text-align: center;
 }
 
@@ -24,6 +23,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: black;
+  margin: 0 3rem;
 }
 
 .App-link {
@@ -56,4 +56,15 @@ button {
   text-align: center;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.colorPalette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.colorBlock {
+  width: 20px;
+  height: 20px;
 }
