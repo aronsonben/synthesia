@@ -1,18 +1,19 @@
 .App {
   font-family: 'Courier New', Courier, monospace;
-  /* background-color: #ddd5e4; */
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  min-height: 100vh;
+  font-size: calc(8px + 2vmin);
+  margin: 0 3rem;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
 }
 
 .App-header {
@@ -41,6 +42,38 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* *** END DEFAULT *** */
+
+/* *** Auth & Account *** */
+
+.authWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+
+
+/* *** Navbar *** */
+.topNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+
+
+
+
+/* *** MISC. *** */
+
+.loginBlock {
+  text-align: center;
 }
 
 button {

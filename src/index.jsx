@@ -1,16 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {
-  createBrowserRouter,
-  createHashRouter,
-  RouterProvider,
-} from "react-router-dom";
-// import '@wcj/dark-mode';
-import './index.css';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from './Home';
+import Auth from './Auth'
+import Account from './Account'
 import Color from './routes/Color';
 import Palettes from './routes/Palettes';
 import ErrorPage from './ErrorPage';
+import './index.css';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +22,16 @@ const router = createBrowserRouter([
   {
     path: "/synthesia/palettes/",
     element: <Palettes />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/account",
+    element: <Account />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/login",
+    element: <Auth />,
     errorElement: <ErrorPage />,
   },
   {
