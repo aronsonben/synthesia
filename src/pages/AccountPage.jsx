@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { supabase } from './supabaseClient'
-import Avatar from './Avatar'
+import { supabase } from '../supabaseClient'
+import { useSession } from "../context/SessionContext";
+import Avatar from '../components/Avatar'
 
-export default function Account({ session }) {
+export default function Account() {
+  const { session } = useSession();
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState(null)
   const [website, setWebsite] = useState(null)

@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from './supabaseClient'
-import Auth from './Auth'
-import Account from './Account'
-import logo from "../public/DCWW_white.png";
-import "./Home.css";
+import { supabase } from '../supabaseClient'
+import "../assets/Home.css";
 
 const App = () => {
   const [session, setSession] = useState(null);
@@ -23,8 +20,17 @@ const App = () => {
   return (
     <div className="App">
       <div className="topNav">
+        {!session ? 
+          <button onClick={() => navigate("/auth/sign-in")}>Login</button> 
+          : 
+          (<>
+            <button onClick={() => navigate("/profile")}>Profile</button>
+            <button onClick={() => supabase.auth.signOut()}>Logout</button>
+          </>)
+        }
+      </div>
+      <div className="homeHeader">
         <h1>Synthesia</h1>
-        {!session ? <button onClick={() => navigate("/login")}>Login</button> : <button onClick={() => supabase.auth.signOut()}>Logout</button>}
       </div>
       <div className="colorPalette">
         <div className="colorBlock" style={{ backgroundColor: "#ef476f" }}></div>
@@ -40,8 +46,7 @@ const App = () => {
         </a>
       </div>
       <div className="loginBlock">
-        <h3>Optional Login</h3>
-        {!session ? <Auth /> : <Account key={session.user.id} session={session} />}
+        {/* {!session ? <Auth /> : <Account key={session.user.id} session={session} />} */}
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { supabase } from './supabaseClient'
+import { supabase } from '../../supabaseClient'
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
+import "../../assets/Home.css";
 
-export default function Auth() {
+export default function AuthOTP() {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
   const navigate = useNavigate();
@@ -24,8 +24,8 @@ export default function Auth() {
 
   return (
     <div className="App">
-      <div className="topNav">
-      <h1>Synthesia</h1>
+      <div className="homeHeader">
+        <h1>Synthesia</h1>
       </div>
       <div className="authWrapper">
         <div className="authBlock">

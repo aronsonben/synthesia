@@ -7,6 +7,10 @@ dist
 dist-ssr
 *.local
 
+# Temporarily not needed (WIP)
+postcss.config.js
+tailwind.config.js
+
 # Personal/temporary files, ignore this
 synthesia.code-workspace
 .DS_Store

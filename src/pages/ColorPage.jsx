@@ -6,7 +6,6 @@ import { UniverseButton } from '../Components';
 import { GetColorName } from 'hex-color-to-color-name';
 import { createClient } from "@supabase/supabase-js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Navbar from '../Navbar';
 import '../StoUniverse.css';
 import '../Color.css';
 // import '@wcj/dark-mode';
@@ -139,7 +138,7 @@ const Color = () => {
     } else {
       // Otherwise, go to final review page
       console.log('redir');
-      navigate("/synthesia/palettes");
+      navigate("/palettes");
     }
   }
 
@@ -166,7 +165,7 @@ const Color = () => {
     } else {
       // Otherwise, go to final review page
       console.log('redir');
-      navigate("/synthesia/palettes");
+      navigate("/palettes");
     }
   }
 
@@ -285,7 +284,7 @@ const Color = () => {
             })
           }
         </ol>
-        <button onClick={() => navigate('/synthesia/palettes')}>palettes</button>
+        <button onClick={() => navigate('/palettes')}>palettes</button>
       </div>
       <div className="ColorHolder">
         {
@@ -337,7 +336,7 @@ const Color = () => {
           <button className="ColorSubmit" onClick={() => submitColorSupa(hsvaToHex(hsva))}>SUBMIT</button>
           <button className={(currentTrackOrder <= tracks.length) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder <= tracks.length) ? nextTrack(currentTrackOrder + 1) : ''}>Next {'>'}</button>
         </div>
-        <button onClick={() => navigate('/synthesia/palettes')}>Finish (go to palettes)</button>
+        <button onClick={() => navigate('/palettes')}>Finish (go to palettes)</button>
         <div className="FormProgress" style={{"display": "none"}}>
           {currentTrackOrder >= 4 ? (<span>...</span>) : null}
           {
@@ -357,7 +356,7 @@ const Color = () => {
           }
           {currentTrackOrder <= 18 ? (<span>...</span>) : null}
           <div>
-            <button onClick={() => navigate('/synthesia/palettes')}>Finish (go to palettes)</button>
+            <button onClick={() => navigate('/palettes')}>Finish (go to palettes)</button>
           </div>
         </div>
       </div>
