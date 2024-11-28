@@ -28,13 +28,20 @@ const TrackAudio = ({ track }) => {
     const audioElement = audioRef.current;
 
     const handleTimeUpdate = () => {
-      if (audioElement.currentTime >= 30) {
+      if (audioElement.currentTime >= 60) {
         audioElement.pause();
-        audioElement.currentTime = 0; // Optionally reset to the beginning
+        audioElement.currentTime = 30; // Optionally reset to the beginning
       }
     };
 
     audioElement.addEventListener('timeupdate', handleTimeUpdate);
+
+    const handleLoadedData = () => {
+      console.log('Track loaded');
+      audioElement.currentTime = 30;
+    };
+
+    audioElement.addEventListener('loadeddata', handleLoadedData);
 
     return () => {
       audioElement.removeEventListener('timeupdate', handleTimeUpdate);
@@ -43,7 +50,7 @@ const TrackAudio = ({ track }) => {
 
   return (
     <div className="TrackAudio">
-      <audio ref={audioRef} controls controlslist="nodownload noplaybackrate" src={track.link}></audio>
+      <audio ref={audioRef} controls controlsList="nodownload noplaybackrate" src={track.link}></audio>
       <span style={{"fontSize": "10px"}}><i>*30sec snippet</i></span>
       <p>{track.title}</p>
     </div>
@@ -77,7 +84,6 @@ const Color = () => {
   let colorText = {"color": textColor};
 
   useEffect(() => {
-    // TODO: test internet connection?
     // Supabase implementation
     getTracks().then(tracks => {
       console.log('FOUND: ');
@@ -85,61 +91,22 @@ const Color = () => {
       setThisTrack(tracks[0]);
       setTrackID(tracks[0]['id']);
       setCurrentTrackOrder(tracks[0]['track_order']);
+      // Trying to not use the track_order value and instead allow for filtering:
+      // setCurrentTrackOrder(0);
     }).catch(() => {
       console.log('ERROR: Could not connect to database (Supabase)');
       // On error, pre-fill with sample database
       initialPopulate();
     });
-
-    // Pre-supabase:
-    /* let ignore = false;
-    initialPopulate();
-    setTrackDB({});
-    setThisTrack({});
-    getData().then(result => {
-      if (!ignore) {
-        setTrackDB(result);
-        setThisTrack(result[1]);
-      }
-    });
-    return () => {
-      ignore = true;
-    }; */
   }, []);
 
   async function getTracks() {
-    const { data } = await supabase.from("tracks").select().order('track_order');
+    // const { data } = await supabase.from("tracks").select().order('track_order');
+    const { data } = await supabase.from("tracks").select().in('id', [6, 5, 8, 9, 20]).order('track_order');
     console.log("getting tracks...:");
     console.log(data);
     setTracks(data);
     return data;
-  }
-
-  /** onSubmit:
-   * - save new hex to current trackID
-   * - change trackID to next trackID
-   */
-  async function submitColor(hex) {
-    console.log("submiting: ",hex);
-    // Fetch data
-    let tracks = await getData();
-    // Get color array for current track
-    let trackColors = tracks[trackID]["colors"];
-    // Add new hex to color array
-    trackColors.push(hex);
-    // Update track object with new array
-    tracks[trackID]["colors"] = trackColors;
-    // Save data
-    await storeData(tracks);
-    // Check that we're not at the end of the tracklist
-    if(trackID < Object.keys(tracks).length) {
-      // If so, change to next trackID
-      nextTrack(trackID + 1);
-    } else {
-      // Otherwise, go to final review page
-      console.log('redir');
-      navigate("/palettes");
-    }
   }
 
   /** submitColor function modified to work with supabase */
@@ -186,15 +153,30 @@ const Color = () => {
   async function nextTrack(nextID) {
     // Check if nextID exists??
     console.log(nextID);
+    // const { data, error } = await supabase.from("tracks").select().eq("track_order", nextID).limit(1);
     const { data, error } = await supabase.from("tracks").select().eq("track_order", nextID).limit(1);
     console.log(data);
     setTrackID(data[0]['id']);
     setCurrentTrackOrder(data[0]['track_order']);
     setThisTrack(data[0]);
-    // Pre-supa
-    // setTrackID(nextID);
-    // setThisTrack(trackDB[nextID]);
     setHsva({ h: 226, s: 29, v: 68, a: 1 });
+  }
+
+  /**
+   * Set the next track to the next track in the track list fetched from the database upon load,
+   * instead of just incrementing the current track order.
+   */
+  async function nextTrackFiltered() {
+    console.log("trying to get next track (filtered)...");
+    console.log
+    // get the next track from tracks[]
+    let nextTrack = tracks[currentTrackOrder+1];
+    console.log(nextTrack);
+    setTrackID(nextTrack.id);
+    setCurrentTrackOrder(currentTrackOrder+1);
+    setThisTrack(nextTrack);
+    setHsva({ h: 226, s: 29, v: 68, a: 1 });
+    console.log("coming up next...", currentTrackOrder+1);
   }
 
   async function selectTrack(track) {
@@ -215,19 +197,6 @@ const Color = () => {
     } catch (e) {
       // error reading value
       console.log("ERROR: ");
-    }
-  }
-
-  async function getOneData(id) {
-    try {
-      const rawJson = await AsyncStorage.getItem('tracks');
-      const jsonValue = JSON.parse(rawJson);
-      const oneValue = jsonValue[id];
-      return oneValue != null ? oneValue : null;
-    } catch (e) {
-      // error reading value
-      console.log("ERROR: ")
-      console.log(e);
     }
   }
 
@@ -290,7 +259,7 @@ const Color = () => {
         {
           (process.env.NODE_ENV == 'development') ?
             (
-              <div className="devTools" style={{"display": "flex", "flex-direction": "column", "width": "25%", "margin": "0 auto"}}>
+              <div className="devTools" style={{"display": "flex", "flexDirection": "column", "width": "25%", "margin": "0 auto"}}>
                 <button onClick={() => setShowDevTools(!showDevTools)}>dev tools</button>
                 {(showDevTools) ? 
                     (<>
@@ -337,28 +306,6 @@ const Color = () => {
           <button className={(currentTrackOrder <= tracks.length) ? "mobileNav" : "disabledMobileNav"} onClick={() => (currentTrackOrder <= tracks.length) ? nextTrack(currentTrackOrder + 1) : ''}>Next {'>'}</button>
         </div>
         <button onClick={() => navigate('/palettes')}>Finish (go to palettes)</button>
-        <div className="FormProgress" style={{"display": "none"}}>
-          {currentTrackOrder >= 4 ? (<span>...</span>) : null}
-          {
-            tracks
-              .filter(({ track_order }) => track_order > currentTrackOrder - 3 && track_order < currentTrackOrder + 3)
-              .map(({ track_order }) => 
-                track_order !== 0 ? (
-                  <span 
-                    className={currentTrackOrder === track_order ? "BoldID TrackNav" : "TrackNav"}
-                    key={track_order} 
-                    onClick={() => selectTrack(track)}
-                  >
-                    {track_order}
-                  </span>
-                ) : null
-              )
-          }
-          {currentTrackOrder <= 18 ? (<span>...</span>) : null}
-          <div>
-            <button onClick={() => navigate('/palettes')}>Finish (go to palettes)</button>
-          </div>
-        </div>
       </div>
     </div>
   );

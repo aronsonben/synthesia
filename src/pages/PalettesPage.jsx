@@ -20,10 +20,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 /**
  * Color block object, a small square filled with the chosen color
  */
-const ColorBlock = ({hex, colorKey}) => {
+const ColorBlock = ({colorKey, hex}) => {
   return (
-    <div className="PaletteDisplay">
-      <div className="ColorBlockSide" style={{background: hex}} key={colorKey}>
+    <div className="PaletteDisplay" key={colorKey+hex}>
+      <div className="ColorBlockSide" style={{background: hex}} >
         <span></span>
       </div>
     </div>
@@ -33,7 +33,7 @@ const ColorBlock = ({hex, colorKey}) => {
 /**
  * Displays the colors for a given track, sorted by rgba
  */
-const TrackPalette = ({track, colorKey}) => {
+const TrackPalette = ({colorKey, track}) => {
   const colors = track.colors;
   const clusters = [
     { name: 'red', leadColor: [255, 0, 0], colors: [] },
@@ -60,7 +60,7 @@ const TrackPalette = ({track, colorKey}) => {
     const colors = curr.colors;
     return [...acc, ...colors];
   }, []);
-  console.log(sortedColors);
+  // console.log(sortedColors);
 
   /**
    * Function from: https://tomekdev.com/posts/sorting-colors-in-js
@@ -156,9 +156,9 @@ const TrackPalette = ({track, colorKey}) => {
     <div className="colorPalettePalettePage">
       <div className="paletteTrackTitle"><p>{track.title}</p></div>
       <div className="paletteColorBlocks">
-        {track.colors.map(hex => {
+        {track.colors.map((hex, index) => {
           return(
-            <ColorBlock hex={hex} colorKey={colorKey+hex} key={colorKey+hex} />
+            <ColorBlock key={`color-${colorKey}-${index}-${hex}`} colorKey={`${colorKey}-${index}`} hex={hex} />
           );
         })}
       </div>
@@ -172,13 +172,14 @@ const Palettes = () => {
   const [tracks, setTracks] = useState([]);
   const [trackID, setTrackID] = useState(1);
   const [currentTrackOrder, setCurrentTrackOrder] = useState(1);
+  const [sessions, setSessions] = useState([]);
   const [showDevTools, setShowDevTools] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     getTracks().then(tracks => {
-      console.log('FOUND: ');
-      console.log(tracks);
+      // console.log('FOUND: ');
+      // console.log(tracks);
       setThisTrack(tracks[0]);
       setTrackID(tracks[0]['id']);
       setCurrentTrackOrder(tracks[0]['track_order']);
@@ -196,9 +197,10 @@ const Palettes = () => {
   }, []);
 
   async function getTracks() {
-    const { data } = await supabase.from("tracks").select().order('track_order');
-    console.log("getting tracks...:");
-    console.log(data);
+    // const { data } = await supabase.from("tracks").select().order('track_order');
+    const { data } = await supabase.from("tracks").select().in('id', [6, 5, 8, 9, 20]).order('track_order');
+    // console.log("getting tracks...:");
+    // console.log(data);
     setTracks(data);
     return data;
   }
@@ -206,7 +208,7 @@ const Palettes = () => {
   async function getData() {
     try {
       const jsonValue = await AsyncStorage.getItem('tracks');
-      console.log(JSON.parse(jsonValue));
+      // console.log(JSON.parse(jsonValue));
       return jsonValue != null ? JSON.parse(jsonValue) : null;
     } catch (e) {
       // error reading value
@@ -222,7 +224,7 @@ const Palettes = () => {
         3: {"title": "thunda", "colors": ["#ffffff"], "link": S3_URL.concat("thunda.mp3")}
       }
       await AsyncStorage.setItem('tracks', JSON.stringify(tracksInit));
-      console.log('added');
+      // console.log('added');
     } catch (e) {
       // saving error
       console.log(e);
@@ -239,7 +241,7 @@ const Palettes = () => {
       let resetColors = ["#ffffff"];
       // Update colors array for current track with new hex:
       const updatedData = updateColors(track.id, resetColors);
-      console.log("updated...");
+      // console.log("updated...");
     });
   }
 
@@ -252,36 +254,143 @@ const Palettes = () => {
     return data;
   }
 
+  /** 
+   * Save the current set of color arrays to the database
+   * by creating a JSON object containing a user-input Session Name,
+   * a timestamped Session Date, and an object mapping each track ID to its color array
+   */
+  async function saveSession() {
+    // Prompt the user for a session name
+    const sessionName = prompt("Enter a session name:");
+    if (!sessionName) {
+      alert("Session name is required.");
+      return;
+    }
+  
+    // Get the current date and time
+    const sessionDate = new Date().toISOString();
+  
+    // Create an object mapping each track ID to its color array
+    const sessionData = {};
+    tracks.forEach(track => {
+      sessionData[track.id] = track.colors;
+    });
+  
+    // Create the JSON object to save
+    const session = {
+      session_name: sessionName,
+      session_date: sessionDate,
+      session_data: sessionData
+    };
+  
+    // Save the session to the database
+    const { data, error } = await supabase
+      .from('sessions')
+      .insert([session]);
+  
+    if (error) {
+      console.error("Error saving session:", error);
+      alert("Failed to save session.");
+    } else {
+      console.log("Session saved successfully:", data);
+      alert("Session saved successfully.");
+    }
+  }
+
+  /** Fetch existing sessions from the database, parse through the session_data objects
+   * to display the session name, date, and track color arrays in a list
+   */
+  async function viewSessions() {
+    // Fetch existing sessions from the database
+    const { data, error } = await supabase
+      .from('sessions')
+      .select('*');
+
+    if (error) {
+      console.error("Error fetching sessions:", error);
+      alert("Failed to fetch sessions.");
+      return;
+    }
+
+    // Parse through the session_data which is {1: ['#fff', '#000']} etc.
+    // Create Track object, which has: key, title, colors
+    // key = id/key of object
+    // title = tracks[id]
+    // colors = session_data[id]
+    data.map(session => {
+      let sessionInstance = {}
+      let sessionTracks = [];
+      Object.keys(session.session_data).map(trackId => {
+        let sessionTrackData = {};
+        // Create new Track object (this should really be a TypeScript class)
+        sessionTrackData.id = trackId;
+        sessionTrackData.title = tracks.filter(track => track.id == trackId)[0].title;
+        sessionTrackData.colors = session.session_data[trackId];
+        // Store new Track object in a sessionTracks array with trackId as key
+        sessionTracks.push(sessionTrackData);
+      });
+      sessionInstance.id = session.id;
+      sessionInstance.name = session.session_name;
+      sessionInstance.date = session.session_date;
+      sessionInstance.tracks = sessionTracks;
+      // Push sessionInstance to array of session objects held in state
+      setSessions([...sessions, sessionInstance]);
+    });
+  }
+
 
   return (
     <div className="Universe Palettes" id="enter">
       <h1>🎨 palettes</h1>
       <div className="allPalettes">
-        {Object.keys(tracks).map(key => {
+        {Object.keys(tracks).map((key, index) => {
           return(
-            <TrackPalette key={"track"+key} track={tracks[key]} colorKey={"track"+key} />
+            <TrackPalette key={`main-${key}-${index}`} colorKey={"main" + key} track={tracks[key]} />
           );
         })}
       </div>
+      <button onClick={() => saveSession()}>save</button>
       <button onClick={() => navigate("/synthesia/color")}>restart</button>
       <hr />
       {
-          (process.env.NODE_ENV == 'development') ?
-            (
-              <div className="devTools" style={{"display": "flex", "flex-direction": "column", "width": "25%", "margin": "0 auto"}}>
-                <button onClick={() => setShowDevTools(!showDevTools)}>dev tools</button>
-                <hr />
-                {(showDevTools) ? 
-                    (<>
-                      <button onClick={() => clearColors()}>clear colors</button>
-                      <hr />
-                      <button onClick={initialPopulate}>populate</button>
-                    </>) 
-                  : (<></>)
-                }
+        (process.env.NODE_ENV == 'development') ?
+          (
+            <div className="devTools" style={{"display": "flex", "flexDirection": "column", "width": "25%", "margin": "0 auto"}}>
+              <button onClick={() => setShowDevTools(!showDevTools)}>dev tools</button>
+              <hr />
+              {(showDevTools) ? 
+                  (<>
+                    <button onClick={() => clearColors()}>clear colors</button>
+                    <hr />
+                    <button onClick={initialPopulate}>populate</button>
+                    <hr />
+                    <button onClick={() => viewSessions()}>view sessions</button>
+                  </>) 
+                : (<></>)
+              }
+              </div>
+          ) : (<></>)
+      }
+      <div id="sessionsContainer">
+        {
+          sessions.map(session => {
+            console.log("TRYING to return session", session);
+            return(
+              <div className="session" key={`session-${session.id}`}>
+                <h3>{session.name}</h3>
+                <p>{session.date}</p>
+                <div className="sessionData allPalettes">
+                  {Object.keys(session.tracks).map((key, index) => {
+                    return(
+                      <TrackPalette key={`session-track-${key}-${index}`} colorKey={`track-${key}-${index}`} track={session.tracks[key]} />
+                    );
+                  })}
                 </div>
-            ) : (<></>)
+              </div>
+            );
+          })
         }
+      </div>
     </div>
   );
 };
