@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import '../StoUniverse.css';
+import '../Color.css';
 
 const EnterSto = () => {
   const [count, setCount] = useState(0);

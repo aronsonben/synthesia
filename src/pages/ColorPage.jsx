@@ -6,7 +6,6 @@ import { UniverseButton } from '../Components';
 import { GetColorName } from 'hex-color-to-color-name';
 import { createClient } from "@supabase/supabase-js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import '../StoUniverse.css';
 import '../Color.css';
 // import '@wcj/dark-mode';
 
@@ -15,9 +14,20 @@ const S3_URL = "https://s3.amazonaws.com/dropcolumn.com/flexonem/";
 if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables')
 }
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+let supabaseUrl = '';
+let supabaseAnonKey = '';
+if (import.meta.env.DEV) {
+  console.log('Connecting to Supabase in development');
+  supabaseUrl = import.meta.env.VITE_SUPABASE_DEV_URL
+  supabaseAnonKey = import.meta.env.VITE_SUPABASE_DEV_ANON_KEY
+} else if (import.meta.env.PROD) {
+  console.log('Connecting to Supabase in production');
+  supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+  supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+} else {
+  console.log('ERROR: Could not connect to Supabase');
+  throw new Error('Could not instantiate connection to Supabase');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -101,8 +111,8 @@ const Color = () => {
   }, []);
 
   async function getTracks() {
-    // const { data } = await supabase.from("tracks").select().order('track_order');
-    const { data } = await supabase.from("tracks").select().in('id', [6, 5, 8, 9, 20]).order('track_order');
+    const { data } = await supabase.from("tracks").select().order('track_order');
+    // const { data } = await supabase.from("tracks").select().in('id', [6, 5, 8, 9, 20]).order('track_order'); // Thanksgiving demo filter
     console.log("getting tracks...:");
     console.log(data);
     setTracks(data);
@@ -153,7 +163,6 @@ const Color = () => {
   async function nextTrack(nextID) {
     // Check if nextID exists??
     console.log(nextID);
-    // const { data, error } = await supabase.from("tracks").select().eq("track_order", nextID).limit(1);
     const { data, error } = await supabase.from("tracks").select().eq("track_order", nextID).limit(1);
     console.log(data);
     setTrackID(data[0]['id']);

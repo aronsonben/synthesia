@@ -4,7 +4,6 @@ import { hexToRgba, hexToHsva, hsvaToHsla, hslaToHsl } from '@uiw/color-convert'
 import { createClient } from "@supabase/supabase-js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import '../Color.css';
-import '../StoUniverse.css';
 
 // Set up env variables
 const S3_URL = "https://s3.amazonaws.com/dropcolumn.com/flexonem/";
@@ -184,21 +183,10 @@ const Palettes = () => {
       setTrackID(tracks[0]['id']);
       setCurrentTrackOrder(tracks[0]['track_order']);
     });
-    /* let ignore = false;
-    getData().then(result => {
-      if (!ignore) {
-        setTrackDB(result);
-        setThisTrack(result[1]);
-      }
-    });
-    return () => {
-      ignore = true;
-    }; */
   }, []);
 
   async function getTracks() {
-    // const { data } = await supabase.from("tracks").select().order('track_order');
-    const { data } = await supabase.from("tracks").select().in('id', [6, 5, 8, 9, 20]).order('track_order');
+    const { data } = await supabase.from("tracks").select().order('track_order');
     // console.log("getting tracks...:");
     // console.log(data);
     setTracks(data);
@@ -236,13 +224,13 @@ const Palettes = () => {
    */
   async function clearColors() {
     // For each track in tracks list
-    tracks.map(track => {
-      let trackColors = track.colors;
-      let resetColors = ["#ffffff"];
-      // Update colors array for current track with new hex:
-      const updatedData = updateColors(track.id, resetColors);
-      // console.log("updated...");
-    });
+    // tracks.map(track => {
+    //   let trackColors = track.colors;
+    //   let resetColors = ["#ffffff"];
+    //   // Update colors array for current track with new hex:
+    //   const updatedData = updateColors(track.id, resetColors);
+    //   // console.log("updated...");
+    // });
   }
 
   async function updateColors(id, newColors) {
@@ -318,23 +306,24 @@ const Palettes = () => {
     // title = tracks[id]
     // colors = session_data[id]
     data.map(session => {
-      let sessionInstance = {}
+      let sessionDetails = {}
       let sessionTracks = [];
       Object.keys(session.session_data).map(trackId => {
         let sessionTrackData = {};
         // Create new Track object (this should really be a TypeScript class)
         sessionTrackData.id = trackId;
-        sessionTrackData.title = tracks.filter(track => track.id == trackId)[0].title;
+        const track = tracks.filter(track => track.id == trackId)[0];
+        if (track) { sessionTrackData.title = track.title; }
         sessionTrackData.colors = session.session_data[trackId];
         // Store new Track object in a sessionTracks array with trackId as key
         sessionTracks.push(sessionTrackData);
       });
-      sessionInstance.id = session.id;
-      sessionInstance.name = session.session_name;
-      sessionInstance.date = session.session_date;
-      sessionInstance.tracks = sessionTracks;
-      // Push sessionInstance to array of session objects held in state
-      setSessions([...sessions, sessionInstance]);
+      sessionDetails.id = session.id;
+      sessionDetails.name = session.session_name;
+      sessionDetails.date = session.session_date;
+      sessionDetails.tracks = sessionTracks;
+      // Push sessionDetails to array of session objects held in state
+      setSessions([...sessions, sessionDetails]);
     });
   }
 
