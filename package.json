@@ -26,10 +26,12 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@types/chroma-js": "^3.1.1",
     "@types/node": "22.9.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "18.3.1",
     "@uiw/react-color": "^2.3.4",
+    "chroma-js": "^3.1.2",
     "hex-color-to-color-name": "^1.0.2",
     "postcss": "8.4.49",
     "tailwind-merge": "^2.5.2",

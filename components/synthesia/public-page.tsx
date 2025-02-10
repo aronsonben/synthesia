@@ -5,11 +5,8 @@ import { Colorful } from "@uiw/react-color";
 import { hsvaToHex } from "@uiw/color-convert";
 import { GetColorName } from "hex-color-to-color-name";
 import { Track as TrackInterface } from "@/lib/interface";
-import PalettePicker from "@/components/synthesia/palette-picker";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import Accordion from "../ui/accordion";
-import { Track } from "@/lib/interface";
 // import Track from "./track";
 import "@/components/ui/styles.css";
 
@@ -22,6 +19,7 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
   const [hsva, setHsva] = useState({ h: 226, s: 0, v: 100, a: 1 });
   const [userTracks, setUserTracks] = useState<TrackInterface[]>([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [showAdminReturn, setShowAdminReturn] = useState(true);
 
   useEffect(() => {
     setUserTracks(tracks.filter((track) => track.user_id == user.id));
@@ -43,11 +41,16 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
   return (
     <div className="h-1/2 flex flex-col gap-4 items-center justify-center p-4" style={{ backgroundColor: hsvaToHex(hsva)}}>
       <div className="flex flex-col">
-        <div className="flex flex-col gap-2 p-4 my-2 border rounded-lg">
-          <Link href={"/synthesia"} className="text-sm text-gray-300 underline">Return to Admin</Link>
-          <h4 className="font-bold">{user?.email}'s Tracks</h4>
-          <p className="text-xs text-gray-300">You are viewing your public page. This is what users will see when choosing colors.</p>
-        </div>
+        {showAdminReturn && (
+          <div className="flex flex-col gap-2 p-4 my-2 border rounded-lg bg-white">
+            <div className="flex justify-between items-center">
+              <Link href={"/synthesia"} className="text-sm text-gray-500 underline">Return to Admin</Link>
+              <button onClick={() => setShowAdminReturn(false)} className="text-sm text-gray-500">x</button>
+            </div>
+            <h4 className="font-bold">{user?.email}'s Tracks</h4>
+            <p className="text-xs text-gray-500">You are viewing your public page. This is what users will see when choosing colors.</p>
+          </div>
+        )}
         <div className="flex-1 overflow-auto  border rounded-lg shadow-lg">
           <div className="flex flex-col justify-center items-center p-4">
             <div className="flex flex-col my-4 items-center gap-2">
@@ -94,6 +97,11 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
                 Next
               </Button>
             </div>
+            <Link href="/synthesia/palettes" className="flex w-full mt-4">
+              <Button className="w-full">
+                View Palettes
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
