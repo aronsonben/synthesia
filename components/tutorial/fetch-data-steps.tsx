@@ -1,5 +1,6 @@
 import { TutorialStep } from "./tutorial-step";
 import { CodeBlock } from "./code-block";
+import Link from "next/link";
 
 const create = `create table notes (
   id bigserial primary key,
@@ -82,6 +83,11 @@ export default function FetchDataSteps() {
             /app/notes/page.tsx
           </span>{" "}
           and add the following.
+          Then go ahead and click{" "}
+            <Link href="/notes" className="font-bold hover:underline text-foreground/80">
+              here
+            </Link>{" "}
+          to view your notes. 
         </p>
         <CodeBlock code={server} />
         <p>Alternatively, you can use a Client Component.</p>
