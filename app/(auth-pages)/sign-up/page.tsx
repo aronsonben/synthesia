@@ -39,14 +39,7 @@ export default async function Signup(props: {
             minLength={6}
             required
           />
-          <SubmitButton pendingText="Signing up..." onClick={async (e) => {
-              e.preventDefault();
-              const form = e.currentTarget.closest('form');
-              if (form) {
-                const formData = new FormData(form);
-                await signUpAction(formData);
-              }
-            }}>
+          <SubmitButton formAction={signUpAction} pendingText="Signing up...">
             Sign up
           </SubmitButton>
           <FormMessage message={searchParams} />
