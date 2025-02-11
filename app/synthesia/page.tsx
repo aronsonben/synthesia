@@ -13,7 +13,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="h-1/2 flex flex-col gap-4 items-center justify-center">
+    <main className="h-1/2 flex flex-col gap-4 items-center justify-center p-4">
       <div className="flex flex-col gap-4 pb-4">
         <h1 className="font-semibold text-2xl">Synthesia</h1>
         <p className="text-gray-500 dark:text-gray-400">
