@@ -3,11 +3,10 @@ import PalettePicker from "@/components/synthesia/palette-picker";
 import PublicColorsPage from "@/components/synthesia/public-page";
 import Link from "next/link";
 
-export default async function UserTracksPage({
-  params,
-}: {
-  params: { pageName: string };
-}) {
+type Props = Promise<{ pageName: string }>;
+
+export default async function UserTracksPage(props: { params: Props }) {
+  const { pageName } = await props.params;
   const supabase = await createClient();
 
   const { data: tracks, error } = await supabase.from("tracks").select("*");

@@ -5,6 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
+interface SubmitButtonProps {
+  pendingText: string;
+  formAction: string | ((formData: FormData) => Promise<never>);
+  children: React.ReactNode;
+}
+
 export default async function Login(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
   return (
@@ -34,7 +40,14 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
           placeholder="Your password"
           required
         />
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
+        <SubmitButton pendingText="Signing In..." onClick={async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget.closest('form');
+            if (form) {
+              const formData = new FormData(form);
+              await signInAction(formData);
+            }
+          }}>
           Sign in
         </SubmitButton>
         <FormMessage message={searchParams} />
