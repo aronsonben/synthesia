@@ -11,16 +11,28 @@ export async function addTrack(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: tracks, error: fetchError } = await supabase
+    .from("tracks")
+    .select("id")
+    .order("id", { ascending: false })
+    .limit(1);
+
+  if (fetchError) {
+    throw new Error(fetchError.message);
+  }
+
+  const nextId = tracks.length > 0 ? tracks[0].id + 1 : 1;
+
   const { error } = await supabase
     .from("tracks")
     .insert([
       {
-        id: 22,
+        id: nextId,
         user_id: user?.id,
         title: formData.get("title") as string,
         link: formData.get("link") as string,
         track_order: formData.get("trackorder") as string,
-        colors: ["#ffffff"],
+        colors: [],
         inserted_at: new Date(),
       },
     ])
@@ -75,3 +87,24 @@ export async function editTrack(track: Track) {
 export async function publishTracks() {
   console.log("publishing tracks");
 }
+
+export async function addColorToTrack(track: Track, color: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { error } = await supabase
+    .from("tracks")
+    .update({ colors: [...track.colors, color] })
+    .eq("id", track.id)
+    .eq("user_id", user?.id)
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/");
+};

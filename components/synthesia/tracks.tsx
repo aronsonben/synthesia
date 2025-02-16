@@ -1,19 +1,86 @@
-import { createClient } from "@/utils/supabase/server";
+"use client";
+
+import { useEffect, useState } from "react";
+import { editTrack } from "@/actions/synthesia/actions";
+import { Button } from "@/components/ui/button";
+import AddTrack from "./add-track";
+import PublishTracks from "./publish-tracks";
+import Accordion from "../ui/accordion";
+import Track from "./track";
+import { Track as TrackInterface } from "@/lib/interface";
 import ManageTracksToggle from "./manage-tracks";
 
-export default async function Tracks() {
-  const supabase = await createClient();
+interface TracksProps {
+  tracks: TrackInterface[];
+  user: { id: string };
+}
 
-  const { data: tracks, error } = await supabase.from("tracks").select("*");
+/** TODO: Bring back some of the client component code to here now that I've
+ * shifted the fetching of track & user data to the synthesia page component.
+ */
+export default function Tracks({ tracks, user }: TracksProps) {
+  const [isManageMode, setIsManageMode] = useState(false);
+  const [userTracks, setUserTracks] = useState<TrackInterface[]>([]);
+  const [tracksIsEmpty, setTracksIsEmpty] = useState(userTracks.length === 0);
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  useEffect(() => {
+    setUserTracks(tracks.filter((track) => track.user_id == user.id));
+    setTracksIsEmpty(userTracks.length === 0);
+  }, [tracks]);
 
-  const { data, error: errorUser } = await supabase.auth.getUser();
-  if (errorUser) {
-    throw new Error(errorUser.message);
-  }
+  const toggleManageMode = () => {
+    setIsManageMode(!isManageMode);
+  };
 
-  return <ManageTracksToggle tracks={tracks} user={data?.user} />;
+  const handleEditTrack = async (track: TrackInterface) => {
+    await editTrack(track);
+  };
+
+  return (
+    <div className="flex-1 overflow-auto">
+      <div className="flex flex-col">
+        <h2 className="text-xl font-bold">Manage Tracks</h2>
+        {userTracks.length === 0 ? (
+          <>
+            <p className="text-xs py-2 text-gray-500 dark:text-gray-400">
+              <i>Add some tracks to get started!</i>
+            </p>
+            <AddTrack />
+          </>
+        ) : (
+          <>
+            <Button onClick={toggleManageMode} className="mt-2 mb-4">
+              {isManageMode ? "Disable Manage Mode" : "Enable Manage Mode"}
+            </Button>
+            {isManageMode && (
+              <div className="flex my-4 items-center gap-4">
+                <AddTrack />
+              </div>
+            )}
+          </>
+        )}
+        {tracks &&
+          userTracks.map((track) => (
+            <div className="flex my-0 items-center" key={track.id}>
+              <Accordion
+                key={track.id}
+                trackTitle={track.title}
+                track={track}
+                onEditTrack={handleEditTrack}
+                className="track"
+                type="single"
+                defaultValue="track-1"
+                collapsible
+                disabled={!isManageMode}
+              />
+            </div>
+          ))}
+        {isManageMode && (
+          <div className="flex my-4 items-center gap-4">
+            <PublishTracks />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

@@ -5,9 +5,12 @@ import { Colorful } from "@uiw/react-color";
 import { hsvaToHex } from "@uiw/color-convert";
 import { GetColorName } from "hex-color-to-color-name";
 import { Track as TrackInterface } from "@/lib/interface";
+import PalettePicker from "@/components/synthesia/palette-picker";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-// import Track from "./track";
+import Accordion from "../ui/accordion";
+import { Track } from "@/lib/interface";
+import { addColorToTrack } from "@/actions/synthesia/actions";
 import "@/components/ui/styles.css";
 
 interface PublicColorsPageProps {
@@ -19,8 +22,7 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
   const [hsva, setHsva] = useState({ h: 226, s: 0, v: 100, a: 1 });
   const [userTracks, setUserTracks] = useState<TrackInterface[]>([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [showAdminReturn, setShowAdminReturn] = useState(true);
-
+  
   useEffect(() => {
     setUserTracks(tracks.filter((track) => track.user_id == user.id));
   }, [tracks]);
@@ -32,25 +34,31 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
   };
 
   const handleNext = () => {
-    console.log(hsva);
     setCurrentTrackIndex((prevIndex) =>
       prevIndex < userTracks.length - 1 ? prevIndex + 1 : prevIndex
     );
   };
 
+  const handleSubmit = async () => {
+    const hexColor = hsvaToHex(hsva);
+    const currentTrack = userTracks[currentTrackIndex];
+    await addColorToTrack(currentTrack, hexColor);
+
+    if (currentTrackIndex < userTracks.length - 1) {
+      handleNext();
+    } else {
+      window.location.href = "/synthesia/palettes";
+    }
+  };
+
   return (
     <div className="h-1/2 flex flex-col gap-4 items-center justify-center p-4" style={{ backgroundColor: hsvaToHex(hsva)}}>
       <div className="flex flex-col">
-        {showAdminReturn && (
-          <div className="flex flex-col gap-2 p-4 my-2 border rounded-lg bg-white">
-            <div className="flex justify-between items-center">
-              <Link href={"/synthesia"} className="text-sm text-gray-500 underline">Return to Admin</Link>
-              <button onClick={() => setShowAdminReturn(false)} className="text-sm text-gray-500">x</button>
-            </div>
-            <h4 className="font-bold">{user?.email}'s Tracks</h4>
-            <p className="text-xs text-gray-500">You are viewing your public page. This is what users will see when choosing colors.</p>
-          </div>
-        )}
+        <div className="flex flex-col gap-2 p-4 my-2 border rounded-lg bg-white">
+          <Link href={"/synthesia"} className="text-sm text-gray-500 underline">Return to Admin</Link>
+          <h4 className="font-bold">{user?.email}'s Tracks</h4>
+          <p className="text-xs text-gray-500">You are viewing your public page. This is what users will see when choosing colors.</p>
+        </div>
         <div className="flex-1 overflow-auto  border rounded-lg shadow-lg">
           <div className="flex flex-col justify-center items-center p-4">
             <div className="flex flex-col my-4 items-center gap-2">
@@ -89,6 +97,9 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
             <div className="flex gap-4 mt-4">
               <Button onClick={handlePrevious} disabled={currentTrackIndex === 0}>
                 Previous
+              </Button>
+              <Button onClick={handleSubmit}>
+                Submit
               </Button>
               <Button
                 onClick={handleNext}

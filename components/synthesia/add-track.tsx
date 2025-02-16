@@ -5,10 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addTrack } from "@/actions/synthesia/actions";
 import { Label } from "../ui/label";
+import AWS from 'aws-sdk';
+
+AWS.config.update({
+  accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+});
+
+const s3 = new AWS.S3();
 
 export default function AddTrack() {
   const ref = useRef<HTMLFormElement>(null);
   const [title, setTitle] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [link, setLink] = useState("");
   const [trackorder, setTrackorder] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
@@ -18,9 +28,10 @@ export default function AddTrack() {
     setTitle(newValue);
   };
 
-  const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setLink(newValue);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
   };
 
   const handleOrderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,9 +41,27 @@ export default function AddTrack() {
 
   const handleAddTrack = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!file) return;
+
+    const params = {
+      Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+      Key: `${Date.now()}_${file.name}`,
+      Body: file,
+      ContentType: file.type,
+    };
+
+    let uploadLink = "";
+    try {
+      const uploadResult = await s3.upload(params).promise();
+      console.log('File uploaded successfully:', uploadResult.Location);
+      uploadLink = uploadResult.Location;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("link", link);
+    formData.append("link", uploadLink);
     formData.append("trackorder", trackorder.toString());
 
     await addTrack(formData);
@@ -65,14 +94,13 @@ export default function AddTrack() {
               onChange={handleTitleChange}
               required
             />
-            <Label htmlFor="link">Link*</Label>
+            <Label htmlFor="file">File*</Label>
             <Input
-              id="link"
+              id="file"
               className="p-0 border-none focus-visible:ring-transparent"
-              name="link"
-              placeholder="Link to song mp3"
-              value={link}
-              onChange={handleLinkChange}
+              name="file"
+              type="file"
+              onChange={handleFileChange}
               required
             />
             <Label htmlFor="trackorder">Track Order*</Label>
