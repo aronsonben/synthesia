@@ -67,17 +67,17 @@ export async function editTrack(track: Track) {
   revalidatePath("/");
 }
 
-// export async function deleteNote(id: number) {
-//   const supabase = await createClient();
+export async function deleteTrack(id: number, userId: string) {
+  const supabase = await createClient();
 
-//   const { error } = await supabase.from("notes").delete().eq("id", id);
+  const { error } = await supabase.from("tracks").delete().eq("user_id", userId).eq("id", id);
 
-//   if (error) {
-//     throw new Error(error.message);
-//   }
+  if (error) {
+    throw new Error(error.message);
+  }
 
-//   revalidatePath("/");
-// }
+  revalidatePath("/");
+}
 
 /**
  * Function that creates a new public page that displays every track in the database

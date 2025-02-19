@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Colorful } from "@uiw/react-color";
 import { hsvaToHex } from "@uiw/color-convert";
 import { GetColorName } from "hex-color-to-color-name";
 import { Track as TrackInterface } from "@/lib/interface";
-import PalettePicker from "@/components/synthesia/palette-picker";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Accordion from "../ui/accordion";
@@ -22,6 +22,7 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
   const [hsva, setHsva] = useState({ h: 226, s: 0, v: 100, a: 1 });
   const [userTracks, setUserTracks] = useState<TrackInterface[]>([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const router = useRouter();
   
   useEffect(() => {
     setUserTracks(tracks.filter((track) => track.user_id == user.id));
@@ -47,7 +48,7 @@ export default function PublicColorsPage({ tracks, user }: PublicColorsPageProps
     if (currentTrackIndex < userTracks.length - 1) {
       handleNext();
     } else {
-      window.location.href = "/synthesia/palettes";
+      router.push(`/synthesia/palettes`);
     }
   };
 

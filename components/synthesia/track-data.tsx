@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { editTrack } from "@/actions/synthesia/actions";
+import { editTrack, deleteTrack } from "@/actions/synthesia/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Track } from "@/lib/interface";
@@ -25,6 +25,11 @@ export default function TrackData({ track }: { track: Track }) {
     editTrack({ ...track, title: title });
     setIsEditing(false);
   };
+
+  const handleDeleteTrack = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    deleteTrack(track.id, track.user_id);
+  }
 
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
@@ -69,6 +74,9 @@ export default function TrackData({ track }: { track: Track }) {
       <div className="mb-4">
         <label className="block text-gray-700 font-semibold mb-2">Date Added:</label>
         <span className="block text-gray-900">{insertedAtDate.toDateString()}</span>
+      </div>
+      <div className="mb-4">
+        <Button onClick={handleDeleteTrack} className="mt-2">Delete</Button>
       </div>
     </div>
   );

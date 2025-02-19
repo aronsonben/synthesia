@@ -8,7 +8,6 @@ import PublishTracks from "./publish-tracks";
 import Accordion from "../ui/accordion";
 import Track from "./track";
 import { Track as TrackInterface } from "@/lib/interface";
-import ManageTracksToggle from "./manage-tracks";
 
 interface TracksProps {
   tracks: TrackInterface[];
@@ -52,33 +51,28 @@ export default function Tracks({ tracks, user }: TracksProps) {
             <Button onClick={toggleManageMode} className="mt-2 mb-4">
               {isManageMode ? "Disable Manage Mode" : "Enable Manage Mode"}
             </Button>
+            {tracks &&
+              userTracks.map((track) => (
+                <div className="flex my-0 items-center" key={track.id}>
+                  <Accordion
+                    key={track.id}
+                    trackTitle={track.title}
+                    track={track}
+                    onEditTrack={handleEditTrack}
+                    className="track"
+                    type="single"
+                    defaultValue="track-1"
+                    collapsible
+                    disabled={!isManageMode}
+                  />
+                </div>
+              ))}
             {isManageMode && (
-              <div className="flex my-4 items-center gap-4">
+              <div className="flex my-0 items-center">
                 <AddTrack />
               </div>
             )}
           </>
-        )}
-        {tracks &&
-          userTracks.map((track) => (
-            <div className="flex my-0 items-center" key={track.id}>
-              <Accordion
-                key={track.id}
-                trackTitle={track.title}
-                track={track}
-                onEditTrack={handleEditTrack}
-                className="track"
-                type="single"
-                defaultValue="track-1"
-                collapsible
-                disabled={!isManageMode}
-              />
-            </div>
-          ))}
-        {isManageMode && (
-          <div className="flex my-4 items-center gap-4">
-            <PublishTracks />
-          </div>
         )}
       </div>
     </div>

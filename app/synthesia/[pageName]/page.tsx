@@ -1,7 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import PalettePicker from "@/components/synthesia/palette-picker";
 import PublicColorsPage from "@/components/synthesia/public-page";
-import Link from "next/link";
 
 type Props = Promise<{ pageName: string }>;
 

@@ -75,7 +75,7 @@ export default function AddTrack() {
 
   return (
     <form
-      className="flex outline-none items-center gap-2"
+      className="flex outline-none items-center gap-2 mw-full w-full mb-4"
       ref={ref}
       action={async (formData: FormData) => {
         await addTrack(formData);
@@ -83,7 +83,7 @@ export default function AddTrack() {
       }}
     >
       {isAdding ? (
-          <div className="flex flex-col items-start gap-2">
+          <div className="flex flex-col items-start gap-2 border rounded-lg p-2">
             <Label htmlFor="title">Title*</Label>
             <Input
               id="title"
@@ -120,7 +120,7 @@ export default function AddTrack() {
           </div>
         ) : (
           <>
-            <Button onClick={toggleAddMode} className="mt-2">Add Track</Button>
+            <Button onClick={toggleAddMode} className="mt-2 mw-full w-full mb-4"><PlusIcon/> Add Track</Button>
           </>
         )}
     </form>
