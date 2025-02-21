@@ -22,3 +22,10 @@ export interface Track {
   track_order: number;
   inserted_at: Date;
 }
+
+export interface PickerPage {
+  id: number;
+  user_id: string;
+  page_name: string;
+  created_at: Date;
+}

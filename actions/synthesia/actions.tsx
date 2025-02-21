@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { Track } from "@/lib/interface";
+import { Track as TrackInterface } from "@/lib/interface";
 
 export async function addTrack(formData: FormData) {
   const supabase = await createClient();
@@ -46,7 +46,7 @@ export async function addTrack(formData: FormData) {
 }
 
 
-export async function editTrack(track: Track) {
+export async function editTrack(track: TrackInterface) {
   const supabase = await createClient();
 
   const {
@@ -79,16 +79,38 @@ export async function deleteTrack(id: number, userId: string) {
   revalidatePath("/");
 }
 
-/**
- * Function that creates a new public page that displays every track in the database
- * with its title and link as an audio player, along with a color picker tool for each track.
- * The page is available to anyone on the internet.
- */
-export async function publishTracks() {
-  console.log("publishing tracks");
+/** Publish a public picker page */
+export async function createPickerPage(userId: string, pageName: string, tracks: TrackInterface[]) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("picker_pages")
+    .insert({ user_id: userId, page_name: pageName })
+    .select();
+
+  if (error || !data) {
+    throw new Error(error.message);
+  }
+
+  const pickerPageId = data[0].id;
+
+  const trackAssociations = tracks.map(track => ({
+    picker_page_id: pickerPageId,
+    track_id: track.id
+  }));
+
+  const { error: trackError } = await supabase
+    .from("picker_page_tracks")
+    .insert(trackAssociations);
+
+  if (trackError) {
+    throw new Error(trackError.message);
+  }
+
+  return pickerPageId;
 }
 
-export async function addColorToTrack(track: Track, color: string) {
+
+export async function addColorToTrack(track: TrackInterface, color: string) {
   const supabase = await createClient();
 
   const {

@@ -17,13 +17,6 @@ export default async function ProtectedPage() {
 
   return (
     <div className="flex-1 w-full flex flex-col">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-          <InfoIcon size="16" strokeWidth={2} />
-          This is a protected page that you can only see as an authenticated
-          user
-        </div>
-      </div>
       <div className="flex flex-col gap-4 items-start p-4">
         <Swatch swatch={["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c"]}/>
         <h2 className="font-bold text-2xl">Welcome to Synthesia</h2>
@@ -37,10 +30,13 @@ export default async function ProtectedPage() {
           <h2 className="font-bold text-lg">I want to...</h2>
           <ul className="flex flex-col text-sm underline gap-2 py-2">
             <li>
-              <Link href="/synthesia">Upload my tracks to start crowdsourcing a color palette</Link>
+              <Link href="/synthesia">[Artist] Upload my tracks to start crowdsourcing a color palette</Link>
             </li>
             <li>
-              <Link href="#" className="text-gray-500">View other users' tracks and color palettes (Not ready yet)</Link>
+              <Link href="#" className="text-gray-500">[Audience] View other users' tracks and color palettes (Not ready yet)</Link>
+            </li>
+            <li>
+              <Link href="#" className="text-gray-500">[All] Edit my profile</Link>
             </li>
           </ul>
         </div>

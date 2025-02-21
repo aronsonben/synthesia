@@ -1,27 +1,26 @@
-import { createClient } from "@/utils/supabase/server";
 import PublicColorsPage from "@/components/synthesia/public-page";
+import { cache } from 'react'
+import { redirect } from "next/navigation";
+import { getUserData, getUserTracks, getUserPickerPages } from "@/utils/supabase/fetchData";
+
+const getUserTracksCached = cache(getUserTracks);
 
 type Props = Promise<{ pageName: string }>;
 
 export default async function UserTracksPage(props: { params: Props }) {
   const { pageName } = await props.params;
-  const supabase = await createClient();
+  const user = await getUserData();
 
-  const { data: tracks, error } = await supabase.from("tracks").select("*");
-
-  if (error) {
-    throw new Error(error.message);
+  if (!user) {
+    redirect("/sign-in");
   }
 
-  const { data, error: errorUser } = await supabase.auth.getUser();
-  if (errorUser) {
-    throw new Error(errorUser.message);
-  }
+  const tracks = await getUserTracksCached(user.id);
   
   return (
     <PublicColorsPage
       tracks={tracks}
-      user={{ id: data?.user?.id || '', email: data?.user?.email || '' }}
+      user={{ id: user?.id || '', email: user?.email || '' }}
     />
   );
 }

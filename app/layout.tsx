@@ -42,7 +42,7 @@ export default function RootLayout({
                       <ThemeSwitcher />
                     </div>
                   </div>
-                  {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />}
+                  <HeaderAuth />
                 </div>
               </nav>
               <div className="flex-1 flex flex-col gap-20 max-w-5xl w-full">

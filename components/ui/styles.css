@@ -1,4 +1,3 @@
-
 /* reset */
 button,
 h3 {
@@ -7,27 +6,7 @@ h3 {
 
 /* Replaced AccordionRoot with TailwindCSS */
 
-.AccordionItem {
-	overflow: hidden;
-	margin-top: 1px;
-}
-
-.AccordionItem:first-child {
-	margin-top: 0;
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
-}
-
-.AccordionItem:last-child {
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
-
-/* .AccordionItem:focus-within {
-	position: relative;
-	z-index: 1;
-	box-shadow: 0 0 0 2px slategray;
-} */
+/* Removed styling for AccordionItem */
 
 .AccordionHeader {
 	display: flex;

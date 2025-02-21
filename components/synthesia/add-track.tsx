@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { addTrack } from "@/actions/synthesia/actions";
 import { Label } from "../ui/label";
 import AWS from 'aws-sdk';
+import { PutObjectRequest } from "aws-sdk/clients/s3";
 
 AWS.config.update({
   accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
@@ -43,12 +44,12 @@ export default function AddTrack() {
     e.preventDefault();
     if (!file) return;
 
-    const params = {
-      Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+    const params: PutObjectRequest = {
+      Bucket: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME || "",
       Key: `${Date.now()}_${file.name}`,
       Body: file,
       ContentType: file.type,
-    };
+    }
 
     let uploadLink = "";
     try {

@@ -1,11 +1,11 @@
 import { cache } from 'react'
 import { redirect } from "next/navigation";
-import Palettes from "@/components/synthesia/palettes";
 import { getUserData, getUserTracks } from "@/utils/supabase/fetchData";
+import PublishTracks from "@/components/synthesia/publish-tracks";
 
 const getUserTracksCached = cache(getUserTracks);
 
-export default async function PalettesPage() {
+export default async function PublishTracksPage() {
   const user = await getUserData();
 
   if (!user) {
@@ -14,5 +14,5 @@ export default async function PalettesPage() {
 
   const tracks = await getUserTracksCached(user.id);
 
-  return <Palettes tracks={tracks} user={user} />;
+  return <PublishTracks tracks={tracks} user={user} />;
 }

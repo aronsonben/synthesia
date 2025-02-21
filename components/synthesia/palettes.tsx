@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Track as TrackInterface } from "@/lib/interface";
 import { Button } from "@/components/ui/button";
+import Swatch from "@/components/swatch";
+import Link from "next/link";
 import chroma from "chroma-js";
 import "@/components/ui/styles.css";
 
@@ -32,7 +34,7 @@ export default function Palettes({ tracks, user }: PalettesProps) {
   };
 
   return (
-    <div className="h-1/2 flex flex-col items-center justify-center w-full">
+    <div className="h-1/2 flex flex-col items-center justify-between w-full" id="palettes">
       <div className="flex flex-col items-center justify-center p-4">
         <h2 className="font-bold bg-[#D7D0DF]">Palettes</h2>
         {/* <p className="text-sm">Sorted by: chronological</p> */}
@@ -42,20 +44,17 @@ export default function Palettes({ tracks, user }: PalettesProps) {
         {userTracks.map((track) => (
           <div
             key={track.id}
-            className="flex flex-col gap-2 p-4 my-2 border rounded-lg w-full"
+            className="flex flex-col flex-wrap gap-2 p-4 my-2 border rounded-lg w-full"
           >
             <h4 className="font-bold">{track.title}</h4>
             <div className="flex flex-wrap w-full">
-              {track.colors.map((color, index) => (
-                <div
-                  key={index}
-                  className="w-8 h-8"
-                  style={{ backgroundColor: color }}
-                ></div>
-              ))}
+              <Swatch swatch={track.colors} size="md" />
             </div>
           </div>
         ))}
+      </div>
+      <div className="flex items-center justify-center p-4">
+        <Link href={"/synthesia"} className="text-sm text-gray-500 underline">Home</Link>
       </div>
     </div>
   );
