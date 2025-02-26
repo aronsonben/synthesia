@@ -82,6 +82,7 @@ export async function deleteTrack(id: number, userId: string) {
 /** Publish a public picker page */
 export async function createPickerPage(userId: string, pageName: string, tracks: TrackInterface[]) {
   const supabase = await createClient();
+  pageName = pageName.replace(/\s+/g, "-").toLowerCase();
   const { data, error } = await supabase
     .from("picker_pages")
     .insert({ user_id: userId, page_name: pageName })

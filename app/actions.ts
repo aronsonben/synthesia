@@ -5,12 +5,15 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+/** Default signUpAction from supabase-next template */
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
+  // TODO: I should probably be encrypting this??? 
   const password = formData.get("password")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
+  /* If email or password are missing, return an error */
   if (!email || !password) {
     return encodedRedirect(
       "error",
@@ -19,6 +22,7 @@ export const signUpAction = async (formData: FormData) => {
     );
   }
 
+  /* Use supabase auth client to create new authorized user */
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -27,6 +31,7 @@ export const signUpAction = async (formData: FormData) => {
     },
   });
 
+  /* Sign user up if successful, otherwise return an error */
   if (error) {
     console.error(error.code + " " + error.message);
     return encodedRedirect("error", "/sign-up", error.message);
@@ -39,11 +44,13 @@ export const signUpAction = async (formData: FormData) => {
   }
 };
 
+/** Default signInAction from supabase-next template */
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const supabase = await createClient();
 
+  /** Use supabase auth client to sign in using password */
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -53,9 +60,11 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  return redirect("/protected");
+  /** TODO: Redirect user to desired location after sign in. Should be changed. */
+  return redirect("/synthesia");
 };
 
+/** Default forgotPasswordAction from supabase-next template */
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
@@ -67,7 +76,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/protected/reset-password`,
+    redirectTo: `${origin}/auth/callback?redirect_to=/synthesia/reset-password`,
   });
 
   if (error) {
@@ -90,6 +99,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   );
 };
 
+/** Default resetPasswordAction from supabase-next template */
 export const resetPasswordAction = async (formData: FormData) => {
   const supabase = await createClient();
 
@@ -99,7 +109,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (!password || !confirmPassword) {
     encodedRedirect(
       "error",
-      "/protected/reset-password",
+      "/synthesia/reset-password",
       "Password and confirm password are required",
     );
   }
@@ -107,7 +117,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (password !== confirmPassword) {
     encodedRedirect(
       "error",
-      "/protected/reset-password",
+      "/synthesia/reset-password",
       "Passwords do not match",
     );
   }
@@ -119,14 +129,15 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (error) {
     encodedRedirect(
       "error",
-      "/protected/reset-password",
+      "/synthesia/reset-password",
       "Password update failed",
     );
   }
 
-  encodedRedirect("success", "/protected/reset-password", "Password updated");
+  encodedRedirect("success", "/synthesia/reset-password", "Password updated");
 };
 
+/** Default signOutAction from supabase-next template */
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();

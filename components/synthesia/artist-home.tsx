@@ -19,7 +19,6 @@ export default function ArtistHome({ tracks, user, pages }: TracksProps) {
   const [isManageMode, setIsManageMode] = useState(false);
 
   useEffect(() => {
-    console.log(pages);
     if (pages.length > 0) {
       setUserHasPublicPage(true);
       {/* Change this eventually to accommodate for each user having multiple pages */};

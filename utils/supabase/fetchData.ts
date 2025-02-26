@@ -1,4 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
+import { PickerPage, Track } from "@/lib/interface";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export const getUserData = async () => {
   const supabase = await createClient();
@@ -27,6 +29,53 @@ export const getUserTracks = async (user_id: string) => {
   return tracks;
 };
 
+export const getUserProfile = async (user_id: string) => {
+  const supabase = await createClient();
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user_id)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return profile;
+}
+
+export const getAllUsers = async () => {
+  const supabase = await createClient();
+
+  const { data: users, error } = await supabase
+    .from("profiles")
+    .select("*")
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return users;
+};
+
+/** Retrieve a list of all published picker pages in the database */
+export const getAllPickerPages = async (): Promise<PickerPage[]> => {
+  const supabase = await createClient();
+
+  const { data: pages, error } = await supabase
+    .from("picker_pages")
+    .select("*");
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  // Should eventually use supabase-js dynamically generated types instead of this
+  return pages as PickerPage[];
+}
+
+/** Retrieve a list of all published picker pages tied to the specified user */
 export const getUserPickerPages = async (user_id: string) => {
   const supabase = await createClient();
 
@@ -40,4 +89,36 @@ export const getUserPickerPages = async (user_id: string) => {
   }
 
   return pages;
+}
+
+/** Retrieve list of tracks associated with the picker page page name */
+export const getTracksByPickerPageName = async (pageName: string): Promise<Track[]> => {
+  const supabase = await createClient();
+
+  console.log("in fetch: ", pageName);
+
+  // 1. Get picker page ID from name
+  const { data: page, error: pageError } = await supabase
+    .from("picker_pages")
+    .select("id")
+    .eq("page_name", pageName)
+    .single();
+
+  if (pageError) {
+    throw new Error(pageError.message);
+  }
+
+  const pickerPageId = page?.id;
+
+  // 2. Get tracks associated with the picker page ID
+  const { data: tracks, error: trackError } = await supabase
+    .from("tracks")
+    .select("*, picker_page_tracks!inner(track_id)")
+    .eq("picker_page_tracks.picker_page_id", pickerPageId);
+
+  if (trackError) {
+    throw new Error(trackError.message);
+  }
+
+  return tracks as Track[];
 }

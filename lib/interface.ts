@@ -23,6 +23,15 @@ export interface Track {
   inserted_at: Date;
 }
 
+export interface Profile {
+  id: string;
+  username: string;
+  full_name: string;
+  avatar_url: string;
+  website: string;
+  updated_at: Date;
+}
+
 export interface PickerPage {
   id: number;
   user_id: string;

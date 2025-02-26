@@ -13,11 +13,13 @@ import "@/components/ui/styles.css";
 import ProgressSwatch from "./progress-swatch";
 
 interface PublicColorsPageProps {
+  pageName: string;
   tracks: TrackInterface[];
-  user: { id: string; email: string };
+  user?: { id: string; email: string };
 }
 
 export default function PublicColorsPage({
+  pageName,
   tracks,
   user,
 }: PublicColorsPageProps) {
@@ -178,7 +180,7 @@ export default function PublicColorsPage({
             </div>
             <div className="flex w-full">
               <Button
-                onClick={() => router.push(`/synthesia/palettes`)}
+                onClick={() => router.push(`/synthesia/${pageName}/palettes`)}
                 className="flex w-full bg-gradient-to-r from-red-500 to-blue-300 border-solid border border-black"
                 size="sm"
               >

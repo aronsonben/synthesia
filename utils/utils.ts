@@ -14,3 +14,14 @@ export function encodedRedirect(
 ) {
   return redirect(`${path}?${type}=${encodeURIComponent(message)}`);
 }
+
+/** Custom image loader for use with next/image, 
+ * specifically for use in loading images from an S3 bucket to populate
+ * a UserProfile avatar image.
+ */
+// export const avatarImageLoader = ({ src, width, quality }) => {
+//   const url = new URL(src);
+//   url.searchParams.set('w', width.toString());
+//   url.searchParams.set('q', (quality || 75).toString());
+//   return url.href;
+// };

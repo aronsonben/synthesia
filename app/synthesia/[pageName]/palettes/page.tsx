@@ -5,7 +5,9 @@ import { getUserData, getUserTracks } from "@/utils/supabase/fetchData";
 
 const getUserTracksCached = cache(getUserTracks);
 
-export default async function PalettesPage() {
+type Props = Promise<{ pageName: string }>;
+
+export default async function PalettesPage(props: { params: Props }) {
   const user = await getUserData();
 
   if (!user) {
