@@ -1,6 +1,4 @@
 import Swatch from "@/components/swatch";
-import { createClient } from "@/utils/supabase/server";
-import { InfoIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getUserData } from "@/utils/supabase/fetchData";

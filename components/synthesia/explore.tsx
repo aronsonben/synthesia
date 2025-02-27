@@ -24,8 +24,8 @@ export default function Explore({ tracks, user }: ExploreProps) {
   }, [tracks]);
 
   return (
-    <div className="flex flex-col w-full items-start justify-start m-4">
-      <h1>Synthesia</h1>
+    <div className="flex flex-col items-start justify-start m-4">
+      <h1 className="text-xl font-bold">Synthesia</h1>
       <div className="flex flex-col my-4 gap-4">
         <h2>A random crowd-sourced color palette: </h2>
         <div className="flex flex-col gap-4 p-4 box-border bg-slate-100 rounded-sm">

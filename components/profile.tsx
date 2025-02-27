@@ -9,6 +9,7 @@ import Link from "next/link";
 import "@/components/ui/styles.css";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
+import { avatarImageLoader } from "@/utils/utils";
 
 interface ExploreProps {
   tracks: TrackInterface[];
@@ -43,6 +44,7 @@ export default function Profile({ tracks, user, profile, pages }: ExploreProps) 
             width={96} 
             height={96}
             className="rounded-lg" 
+            loader={avatarImageLoader}
           />
           <div className="flex flex-col items-start justify-start gap-1">
           <p className="text-lg"><strong>{profile.username}</strong></p>
@@ -63,7 +65,7 @@ export default function Profile({ tracks, user, profile, pages }: ExploreProps) 
           <h3>Public Pages</h3>
             <ul className="list-disc list-inside">
               {pages.map((page) => (
-                <li>
+                <li key={page.page_name}>
                   <Link key={page.id} href={`/pages/${page.id}`} className="underline">{page.page_name}</Link>
                 </li>
               ))}

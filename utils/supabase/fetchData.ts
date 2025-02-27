@@ -2,31 +2,32 @@ import { createClient } from "@/utils/supabase/server";
 import { PickerPage, Track } from "@/lib/interface";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-export const getUserData = async () => {
+export const getUserData = async (userName?: string) => {
   const supabase = await createClient();
+
+  if (userName) {
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("username", userName)
+      .single();
+    // TODO: Might want to add a null check or some error behavior
+    return profile;
+  }
 
   const { data, error } = await supabase.auth.getUser();
   
-  if (error || !data?.user) {
-    throw new Error(error?.message || "Unknown error");
+  // Not checking for error because this should either return the user or null 
+  // Pages will handle the null response 
+  // if (error) {
+  //   throw new Error(error?.message || "Unknown error");
+  // }
+
+  if (!data?.user) {
+    return null;
   }
 
   return data.user;
-};
-
-export const getUserTracks = async (user_id: string) => {
-  const supabase = await createClient();
-
-  const { data: tracks, error } = await supabase
-    .from("tracks")
-    .select("*")
-    .eq("user_id", user_id);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return tracks;
 };
 
 export const getUserProfile = async (user_id: string) => {
@@ -44,6 +45,41 @@ export const getUserProfile = async (user_id: string) => {
 
   return profile;
 }
+
+export const getUserTracks = async (user_id: string) => {
+  const supabase = await createClient();
+
+  const { data: tracks, error } = await supabase
+    .from("tracks")
+    .select("*")
+    .eq("user_id", user_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return tracks;
+};
+
+/** Retrieve a list of all published picker pages tied to the specified user */
+export const getUserPickerPages = async (user_id: string) => {
+  const supabase = await createClient();
+
+  const { data: pages, error } = await supabase
+    .from("picker_pages")
+    .select("*")
+    .eq("user_id", user_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return pages;
+}
+
+/** **********************************
+********** Get ALL Functions *********
+*********************************** */
 
 export const getAllUsers = async () => {
   const supabase = await createClient();
@@ -75,21 +111,24 @@ export const getAllPickerPages = async (): Promise<PickerPage[]> => {
   return pages as PickerPage[];
 }
 
-/** Retrieve a list of all published picker pages tied to the specified user */
-export const getUserPickerPages = async (user_id: string) => {
+export const getAllTracks = async () => {
   const supabase = await createClient();
 
-  const { data: pages, error } = await supabase
-    .from("picker_pages")
-    .select("*")
-    .eq("user_id", user_id);
+  const { data: tracks, error } = await supabase
+    .from("tracks")
+    .select("*");
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return pages;
+  return tracks;
 }
+
+/** **********************************
+********** Misc. Functions *********
+*********************************** */
+
 
 /** Retrieve list of tracks associated with the picker page page name */
 export const getTracksByPickerPageName = async (pageName: string): Promise<Track[]> => {
