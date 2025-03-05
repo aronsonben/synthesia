@@ -1,13 +1,11 @@
 import { cache } from 'react'
 import { redirect } from "next/navigation";
 import Explore from "@/components/synthesia/explore";
-import { getUserData, getAllUsers, getAllTracks, getUserProfile, getUserTracks, getUserPickerPages } from "@/utils/supabase/fetchData";
+import { getAllUsers, getAllTracks, getAllPickerPages, getUserProfile, getUserTracks, getUserPickerPages,  } from "@/utils/supabase/fetchData";
 
-const getUserProfileCached = cache(getUserProfile);
-const getUserTracksCached = cache(getUserTracks);
-const getUserPickerPagesCached = cache(getUserPickerPages);
 const getAllTracksCached = cache(getAllTracks);
 const getAllUsersCached = cache(getAllUsers);
+const getAllPickerPagesCached = cache(getAllPickerPages);
 
 export default async function ExplorePage() {
   // public page, user doesn't need to be signed-in
@@ -15,8 +13,9 @@ export default async function ExplorePage() {
 
   const tracks = await getAllTracksCached();
   const users = await getAllUsersCached();
+  const pages = await getAllPickerPagesCached();
 
   return (
-    <Explore tracks={tracks} users={users} />
+    <Explore tracks={tracks} users={users} pages={pages} />
   );
 }

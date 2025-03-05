@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Track as TrackInterface, SimpleUser } from "@/lib/interface";
+import { Track as TrackInterface, SimpleUser, PickerPage } from "@/lib/interface";
 import { Button } from "@/components/ui/button";
 import Swatch from "@/components/swatch";
 import Link from "next/link";
@@ -10,10 +10,11 @@ import "@/components/ui/styles.css";
 interface ExploreProps {
   tracks: TrackInterface[];
   users: SimpleUser[];
+  pages: PickerPage[];
   user?: { id: string };
 }
 
-export default function Explore({ tracks, users, user }: ExploreProps) {
+export default function Explore({ tracks, users, pages, user }: ExploreProps) {
   const [randomTrack, setRandomTrack] = useState<TrackInterface>(tracks[0]);
   const [randomTrackUser, setRandomTrackUser] = useState<SimpleUser>(users[0]);
 
@@ -49,12 +50,18 @@ export default function Explore({ tracks, users, user }: ExploreProps) {
           </div>
         </div>
       </div>
-      {/* <div className="flex flex-col my-4">
+      <div className="flex flex-col my-4">
         <h2 className="font-bold">All Public Pages: </h2>
         <div className="flex flex-col">
-          <span>placeholder</span>
+          {pages.map((page, index) => (
+              <div key={index} className="flex flex-col gap-1">
+                <Link href={`/synthesia/${page.page_name}`} passHref>
+                <p className="text-sm underline">{page.page_name} by {users.find(user => user.id === page.user_id)?.username || "Unknown"}</p>
+                </Link>
+              </div>
+            ))}
         </div>
-      </div> */}
+      </div>
       <div className="flex flex-col my-4">
         <h2 className="font-bold">Users on Synthesia: </h2>
         <div className="flex flex-col">

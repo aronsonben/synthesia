@@ -89,7 +89,7 @@ export default function PublicColorsPage({
       style={{ backgroundColor: hsvaToHex(hsva) }}
     >
       <div className="flex flex-col">
-        <div className="flex flex-col gap-2 p-4 my-2 border rounded-lg bg-white">
+        {/* <div className="flex flex-col gap-2 p-4 my-2 border rounded-lg bg-white">
           <Link href={"/synthesia"} className="text-sm text-gray-500 underline">
             Return to Admin
           </Link>
@@ -98,7 +98,7 @@ export default function PublicColorsPage({
             You are viewing your public page. This is what users will see when
             choosing colors.
           </p>
-        </div>
+        </div> */}
         <div
           id="pickerbox"
           className="flex-1 overflow-auto border rounded-lg shadow-lg bg-white dark:bg-black"
