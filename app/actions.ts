@@ -7,18 +7,18 @@ import { redirect } from "next/navigation";
 
 /** Default signUpAction from supabase-next template */
 export const signUpAction = async (formData: FormData) => {
+  const username = formData.get("username")?.toString();
   const email = formData.get("email")?.toString();
-  // TODO: I should probably be encrypting this??? 
   const password = formData.get("password")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
   /* If email or password are missing, return an error */
-  if (!email || !password) {
+  if (!username || !email || !password) {
     return encodedRedirect(
       "error",
       "/sign-up",
-      "Email and password are required",
+      "Username, email and password are required",
     );
   }
 
@@ -28,6 +28,9 @@ export const signUpAction = async (formData: FormData) => {
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
+      data: {
+        username: username,
+      }
     },
   });
 
@@ -60,7 +63,6 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  /** TODO: Redirect user to desired location after sign in. Should be changed. */
   return redirect("/synthesia");
 };
 

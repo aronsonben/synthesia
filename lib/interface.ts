@@ -1,16 +1,10 @@
-export interface Todo {
-  id: number;
-  user_id: string;
-  task: string;
-  is_complete: boolean;
-  inserted_at: Date;
-}
 
-export interface Note {
-  id: number;
-  user_id: string;
-  title: string;
-  inserted_at: Date;
+export interface SimpleUser {
+  id: string;
+  username: string;
+  full_name: string;
+  avatar_url: string;
+  website?: string;
 }
 
 export interface Track {
@@ -37,4 +31,22 @@ export interface PickerPage {
   user_id: string;
   page_name: string;
   created_at: Date;
+}
+
+
+/** Tutorial Artifacts ***/
+
+export interface Todo {
+  id: number;
+  user_id: string;
+  task: string;
+  is_complete: boolean;
+  inserted_at: Date;
+}
+
+export interface Note {
+  id: number;
+  user_id: string;
+  title: string;
+  inserted_at: Date;
 }

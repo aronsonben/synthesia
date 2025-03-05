@@ -17,7 +17,7 @@ export default async function Index() {
             <p className="text-sm">Crowdsourced color palettes for your music</p>
             <p className="text-sm">Sign in or sign up to get started</p>
             <p className="text-sm italic">This is a WIP. You may experience bugs.</p>
-            <Link href="/explore">I just want to look around.</Link>
+            <Link href="/explore" className="underline text-sm text-gray-700 dark:text-gray-300">I just want to look around.</Link>
           </div>
         </div>
       </main>

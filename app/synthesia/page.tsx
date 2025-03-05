@@ -3,11 +3,11 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getUserData } from "@/utils/supabase/fetchData";
 
-export default async function ProtectedPage() {
+export default async function SynthesiaHome() {
   const user = await getUserData();
 
   if (!user) {
-    return redirect("/sign-in");
+    return redirect("/");
   }
 
   return (
