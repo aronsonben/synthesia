@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { Track as TrackInterface } from "@/lib/interface";
+import { getUserData } from "@/utils/supabase/fetchData";
 
 export async function addTrack(formData: FormData) {
   const supabase = await createClient();
@@ -114,15 +115,13 @@ export async function createPickerPage(userId: string, pageName: string, tracks:
 export async function addColorToTrack(track: TrackInterface, color: string) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  console.log("in fetch (addColorToTrack): ", track.colors, color);
+  console.log([...track.colors, color]);
 
   const { error } = await supabase
     .from("tracks")
     .update({ colors: [...track.colors, color] })
     .eq("id", track.id)
-    .eq("user_id", user?.id)
     .select();
 
   if (error) {

@@ -70,12 +70,14 @@ export default function PublicColorsPage({
   };
 
   const handleSubmit = async () => {
-    userTracks.map(async (track) => {
-      await addColorToTrack(track, selectedColors[track.id]);
-    });
+    await Promise.all(
+      userTracks.map(async (track) => {
+        await addColorToTrack(track, selectedColors[track.id]);
+      })
+    );
     setSelectedColors({});
     localStorage.removeItem('selectedColors');
-    router.push(`/synthesia/palettes`);
+    router.push(`/synthesia/${pageName}/palettes`);
   };
 
   const getColor = (index: number) => {
@@ -89,16 +91,6 @@ export default function PublicColorsPage({
       style={{ backgroundColor: hsvaToHex(hsva) }}
     >
       <div className="flex flex-col">
-        {/* <div className="flex flex-col gap-2 p-4 my-2 border rounded-lg bg-white">
-          <Link href={"/synthesia"} className="text-sm text-gray-500 underline">
-            Return to Admin
-          </Link>
-          <h4 className="font-bold">{user?.email}'s Tracks</h4>
-          <p className="text-xs text-gray-500">
-            You are viewing your public page. This is what users will see when
-            choosing colors.
-          </p>
-        </div> */}
         <div
           id="pickerbox"
           className="flex-1 overflow-auto border rounded-lg shadow-lg bg-white dark:bg-black"
@@ -110,9 +102,10 @@ export default function PublicColorsPage({
                 <i>What does this sound look like?</i>
               </h4>
             </div>
-            <div className="flex flex-col my-4 items-center gap-2">
+            <div className="flex flex-col my-4 items-center justify-center gap-2">
               {userTracks.length > 0 && (
                 <div key={userTracks[currentTrackIndex].id}>
+                  <h4 className="mb-4 flex justify-center">{userTracks[currentTrackIndex].title}</h4>
                   <audio controls>
                     <source
                       src={userTracks[currentTrackIndex].link}

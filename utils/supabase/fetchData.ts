@@ -130,11 +130,11 @@ export const getAllTracks = async () => {
 *********************************** */
 
 
-/** Retrieve list of tracks associated with the picker page page name */
+/** Retrieve list of tracks associated with the picker page page_name */
 export const getTracksByPickerPageName = async (pageName: string): Promise<Track[]> => {
   const supabase = await createClient();
 
-  console.log("in fetch: ", pageName);
+  console.log("pageName: ", pageName);
 
   // 1. Get picker page ID from name
   const { data: page, error: pageError } = await supabase

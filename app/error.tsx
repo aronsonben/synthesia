@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-export default async function Index() {
+export default function Index() {
   const landingColors = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c"];
   return (
     <>

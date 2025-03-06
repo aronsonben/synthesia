@@ -1,20 +1,42 @@
 import { cache } from 'react'
 import { redirect } from "next/navigation";
 import Palettes from "@/components/synthesia/palettes";
-import { getUserData, getUserTracks } from "@/utils/supabase/fetchData";
-
-const getUserTracksCached = cache(getUserTracks);
+import { supabaseAdmin } from "@/utils/supabase/admin";
+import { 
+  getUserData, 
+  getAllPickerPages,
+  getTracksByPickerPageName } 
+from "@/utils/supabase/fetchData";
 
 type Props = Promise<{ pageName: string }>;
 
-export default async function PalettesPage(props: { params: Props }) {
-  const user = await getUserData();
+const getPickerPageTracksCached = cache(getTracksByPickerPageName);
 
-  if (!user) {
-    redirect("/sign-in");
+// Return a list of `params` to populate the [pageName] dynamic segment
+export async function generateStaticParams() {
+  const { data: pickerPages, error } = await supabaseAdmin
+    .from("picker_pages")
+    .select("*");
+
+  if (error) {
+    throw new Error(error.message);
   }
+ 
+  return pickerPages.map((page) => ({
+    pageName: page.page_name,
+  }))
+}
 
-  const tracks = await getUserTracksCached(user.id);
+export default async function PalettesPage(props: { params: Props }) {
+  const { pageName } = await props.params;
+  console.log("palettes route", pageName);
+
+  const user = await getUserData();
+  const tracks = await getPickerPageTracksCached(pageName);
+
+  if (!tracks) {
+    throw new Error("No tracks found for this page!");
+  }
 
   return <Palettes tracks={tracks} user={user} />;
 }
