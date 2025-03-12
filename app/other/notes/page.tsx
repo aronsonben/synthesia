@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-import { createClient } from '@/utils/supabase/server'
 import Link from "next/link";
 import ClearActions from "@/components/todos/clear-actions";
 import Notes from "@/components/notes/notes";

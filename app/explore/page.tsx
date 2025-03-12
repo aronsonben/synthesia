@@ -1,5 +1,4 @@
 import { cache } from 'react'
-import { redirect } from "next/navigation";
 import Explore from "@/components/synthesia/explore";
 import { getAllUsers, getAllTracks, getAllPickerPages, getUserProfile, getUserTracks, getUserPickerPages,  } from "@/utils/supabase/fetchData";
 
