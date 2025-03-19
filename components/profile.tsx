@@ -56,8 +56,9 @@ export default function Profile({ tracks, user, profile, pages }: ExploreProps) 
           </div>
         </div>
         <div className="flex gap-4 items-center justify-center w-full">
+          {user ? (
             <Button className="text-gray-500 dark:text-gray-100 bg-white dark:bg-black w-full border border-gray-500 border-solid no-hover" size="sm">Edit Profile</Button>
-          {/* <Button variant="secondary" href="/profile/edit" size="sm">Change Password</Button> */}
+          ) : (<></>)}
         </div>
         {/* TODO: Make this an editable feature for the user to pick the track they want featured on their profile */}
         {/* <div className="flex flex-col gap-4 items-start justify-start w-full">

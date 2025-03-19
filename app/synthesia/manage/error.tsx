@@ -18,10 +18,12 @@ export default function Error({
   }, [error])
  
   return (
-    <div className="flex flex-col items-start my-4">
-      <h2>Oops!</h2>
-      <p>Something went wrong...</p>
-      <Button onClick={() => router.push("/")}>Go back</Button>
+    <div className="flex-1 w-full flex flex-col gap-10 items-center" id="synthesia-layout">
+      <div className="flex flex-col items-start my-4">
+        <h2>Oops!</h2>
+        <p>Something went wrong...</p>
+        <Button onClick={() => router.push("/")}>Go back</Button>
+      </div>
     </div>
   )
 }

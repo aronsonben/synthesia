@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Track as TrackInterface, PickerPage } from "@/lib/interface";
 import Tracks from "@/components/synthesia/tracks";
 import { Button } from "@/components/ui/button";
 import AddTrack from "./add-track";
+import { CustomLink } from "@/components/ui/link";
 
 interface TracksProps {
   tracks: TrackInterface[];
@@ -17,6 +19,7 @@ export default function ArtistHome({ tracks, user, pages }: TracksProps) {
   const [userHasPublicPage, setUserHasPublicPage] = useState(false);
   const [userPublicPage, setUserPublicPage] = useState("");
   const [isManageMode, setIsManageMode] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (pages.length > 0) {
@@ -31,13 +34,37 @@ export default function ArtistHome({ tracks, user, pages }: TracksProps) {
   };
 
   return (
-    <main className="h-1/2 flex flex-col gap-4 items-center justify-center p-4">
-      <div className="flex flex-col gap-4 pb-4">
-        <h1 className="font-semibold text-2xl">Synthesia</h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          Welcome to synthesia. Upload your tracks, then create a public page to
-          crowdsource color palettes for your songs.
-        </p>
+    <main className="h-1/2 flex flex-col gap-4 items-center justify-center">
+      <div className="flex flex-col gap-4 w-full">
+        <h2 className="text-xl font-bold">Manage Campaigns</h2>
+        <div className="flex flex-col gap-2 border rounded-lg">
+          {pages.length > 0 ? (
+            pages.map((page, index) => (
+              <div key={index} className="flex justify-between items-center p-4">
+                pageName
+              </div>
+            ))
+          ) : ( 
+            <>
+            <div className="flex justify-between items-center p-4 border-b text-sm">
+              <p>Campaign 1</p>
+              <p>5 tracks</p>
+              <Button variant="outline" size="sm">Edit</Button>
+              <Button variant="outline" size="sm">View</Button>
+            </div>
+            <div className="flex justify-between items-center p-4 border-b text-sm">
+              <p>Campaign 2</p>
+              <p>4 tracks</p>
+              <Button variant="outline" size="sm">Edit</Button>
+              <Button variant="outline" size="sm">View</Button>
+            </div>
+            <div className="flex justify-between items-center p-4 border-b text-xs text-gray-400">
+              <p>You have no Campaigns. Create new Campaign now.</p>
+            </div>
+            </>
+          )}
+        </div>
+        <Button onClick={() => router.push("/synthesia/publish")} className="mt-2 mb-4" size="sm">Create new Campaign</Button>
       </div>
       {tracks.length !== 0 && userHasPublicPage ? (
         <div className="flex flex-col w-full border rounded-lg shadow-lg p-4 bg-blue-200 dark:bg-blue-600">
