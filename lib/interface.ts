@@ -31,6 +31,7 @@ export interface PickerPage {
   user_id: string;
   page_name: string;
   created_at: Date;
+  track_count: number;
 }
 
 

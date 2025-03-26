@@ -14,7 +14,7 @@ export default async function UserHomePage() {
   }
 
   const tracks = await getUserTracksCached(user.id);
-  const pickerPages = await getUserPickerPagesCached(user.id);
+  const campaigns = await getUserPickerPagesCached(user.id);
 
-  return <ArtistHome tracks={tracks} user={user} pages={pickerPages} />;
+  return <ArtistHome tracks={tracks} user={user} campaigns={campaigns} />;
 }

@@ -9,8 +9,9 @@ export default function NavMenu() {
   /** NOTE: This won't work for Palettes and Home right now (3/19) */
   const setLinkVariant = (pageName: string) => {
     const leaf = path.split("/").pop();
-    console.log(leaf);
-    if (leaf === pageName.toLowerCase()) {
+    if (leaf === "synthesia" && pageName === "Home") {
+      return "active";
+    } else if (leaf === pageName.toLowerCase()) {
       return "active";
     } else {
       return "outline";
