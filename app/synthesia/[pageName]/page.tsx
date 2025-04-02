@@ -37,9 +37,10 @@ export default async function UserTracksPage({
   const user = await getUserData();
   
   const tracks = await getPickerPageTracksCached(pageName);
+  // console.log(tracks);
   
   if(!tracks) {
-    // TODO: Add an error page if no tracks can be fetched for a given page
+    // TODO: Add an error page/behavior if no tracks can be fetched for a given page
     return redirect("/synthesia");
   }
 

@@ -38,6 +38,7 @@ export default function RootLayout({
                     <div className="flex items-center gap-2">
                       <ThemeSwitcher />
                     </div>
+                    <Link href={"/synthesia/stolimpico-full"} className="w-6 h-6 bg-blue-950 rounded-full" />
                   </div>
                   <HeaderAuth />
                 </div>

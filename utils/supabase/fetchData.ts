@@ -152,7 +152,11 @@ export const getTracksByPickerPageName = async (pageName: string): Promise<Track
   // 2. Get tracks associated with the picker page ID
   const { data: tracks, error: trackError } = await supabase
     .from("tracks")
-    .select("*, picker_page_tracks!inner(track_id)")
+    .select(`
+      *, 
+      picker_page_tracks ( 
+        track_id
+      )`)
     .eq("picker_page_tracks.picker_page_id", pickerPageId);
 
   if (trackError) {
