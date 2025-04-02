@@ -1,4 +1,4 @@
-import PublicColorsPage from "@/components/synthesia/public-page";
+import PublicColorsPage from "@/components/synthesia/campaign-page";
 import { cache } from 'react'
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/utils/supabase/admin";

@@ -16,7 +16,9 @@ const getPickerPageTracksCached = cache(getTracksByPickerPageName);
 export async function generateStaticParams() {
   const { data: pickerPages, error } = await supabaseAdmin
     .from("picker_pages")
-    .select("*");
+    .select("page_name");
+
+  console.log("Generateing Static Params 2", pickerPages);
 
   if (error) {
     throw new Error(error.message);

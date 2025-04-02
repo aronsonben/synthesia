@@ -134,13 +134,14 @@ export const getAllTracks = async () => {
 export const getTracksByPickerPageName = async (pageName: string): Promise<Track[]> => {
   const supabase = await createClient();
 
-  console.log("pageName: ", pageName);
+  console.log("pageName:", pageName);
 
   // 1. Get picker page ID from name
   const { data: page, error: pageError } = await supabase
     .from("picker_pages")
     .select("id")
     .eq("page_name", pageName)
+    .limit(1)
     .single();
 
   if (pageError) {
@@ -148,13 +149,14 @@ export const getTracksByPickerPageName = async (pageName: string): Promise<Track
   }
 
   const pickerPageId = page?.id;
+  console.log("[fetchData] pickerPageId:", pickerPageId);
 
   // 2. Get tracks associated with the picker page ID
   const { data: tracks, error: trackError } = await supabase
     .from("tracks")
     .select(`
       *, 
-      picker_page_tracks ( 
+      picker_page_tracks!inner ( 
         track_id
       )`)
     .eq("picker_page_tracks.picker_page_id", pickerPageId);

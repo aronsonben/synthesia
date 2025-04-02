@@ -10,6 +10,25 @@ type ProgressSwatchProps = {
   getColor: (index: number) => string;
 };
 
+type SwatchBoxProps = {
+  boxIndex: number;
+  isCurrent: boolean;
+  getColor: (index: number) => string;
+}
+
+const SwatchBox = ({ boxIndex, isCurrent, getColor }: SwatchBoxProps) => {
+  const boxShadow = "inset 0 0 2px 2px #d3d3d3";
+  return (
+    <div
+      className="w-6 h-6 border border-black"
+      style={{ 
+        backgroundColor: getColor(boxIndex),
+        boxShadow: isCurrent ? boxShadow : undefined
+      }}
+    />
+  )
+}
+
 export default function ProgressSwatch({
   previousColor,
   currentColor,
@@ -18,91 +37,46 @@ export default function ProgressSwatch({
   currentTrackIndex,
   getColor,
 }: ProgressSwatchProps) {
+  const isFirstTrack = currentTrackIndex === 0;
+  const isLastTrack = currentTrackIndex === totalTracks - 1;
+
+  const boxShadowStyle = { boxShadow: "inset 0 0 2px 2px #d3d3d3" };
+  const boxShadow = "inset 0 0 2px 2px #d3d3d3";
+
   if (totalTracks === 1) {
     return null;
   }
 
-  const boxShadowStyle = { boxShadow: "inset 0 0 2px 2px #d3d3d3" };
+  if (totalTracks === 2) {
+    return (
+      <div className="flex flex-row items-center gap-2">
+        <span className="text-xs">{currentTrackIndex}</span>
+        <div
+            className="w-6 h-6 border border-black"
+            style={{ 
+              backgroundColor: getColor(0), 
+              boxShadow: currentTrackIndex === 0 ? boxShadow : undefined, 
+            }}
+          ></div>
+        <div
+          className="w-6 h-6 border border-black"
+          style={{ 
+            backgroundColor: getColor(1) ,
+            boxShadow: currentTrackIndex === 1 ? boxShadow : undefined,
+          }}
+        ></div>
+        <span className="text-xs">{totalTracks - 1}</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="flex items-center gap-2">
-        {currentTrackIndex === 0 && totalTracks > 2 ? (
-          <div
-            className="flex items-center gap-2"
-            id={"farleft-block-" + currentTrackIndex}
-          >
-            <span className="text-xs">{currentTrackIndex}</span>
-            <div
-              className="w-6 h-6 border border-black"
-              style={{ backgroundColor: getColor(0), ...boxShadowStyle }}
-            ></div>
-            <div
-              className="w-6 h-6 border border-black"
-              style={{ backgroundColor: getColor(1) }}
-              id="center-block"
-            ></div>
-            <div
-              className="w-6 h-6 border border-black"
-              style={{ backgroundColor: getColor(2) }}
-              id="right-block"
-            ></div>
-            <span className="text-xs">{totalTracks - 1}</span>
-          </div>
-        ) : currentTrackIndex === totalTracks - 1 && totalTracks > 2 ? (
-          <div
-            className="flex items-center gap-2"
-            id={"farright-block-" + currentTrackIndex}
-          >
-            <span className="text-xs">{currentTrackIndex}</span>
-            <div
-              className="w-6 h-6 border border-black"
-              style={{ backgroundColor: getColor(totalTracks - 3) }}
-            ></div>
-            <div
-              className="w-6 h-6 border border-black"
-              style={{ backgroundColor: getColor(totalTracks - 2) }}
-              id="center-block"
-            ></div>
-            <div
-              className="w-6 h-6 border border-black"
-              style={{ backgroundColor: getColor(totalTracks - 1), ...boxShadowStyle }}
-              id="right-block"
-            ></div>
-            <span className="text-xs">{totalTracks - 1}</span>
-          </div>
-        ) : (
-          <>
-            <div
-              className="flex items-center gap-1"
-              id={"left-block-" + currentTrackIndex}
-            >
-              <span className="text-xs">{currentTrackIndex}</span>
-              <div
-                className="w-6 h-6 border border-black"
-                style={{
-                  backgroundColor: getColor(currentTrackIndex - 1),
-                }}
-              ></div>
-            </div>
-            <div
-              className="w-6 h-6 border border-black"
-              style={{
-                backgroundColor: getColor(currentTrackIndex),
-                ...boxShadowStyle,
-              }}
-              id="center-block"
-            ></div>
-            <div className="flex items-center gap-1" id="right-block">
-              <div
-                className="w-6 h-6 border border-black"
-                style={{ backgroundColor: getColor(currentTrackIndex + 1) }}
-              ></div>
-              <span className="text-xs">{totalTracks - 1}</span>
-            </div>
-          </>
-        )}
-      </div>
+    <div className="flex flex-row items-center gap-2">
+      <span className="text-xs">{currentTrackIndex}</span>
+      <SwatchBox boxIndex={isFirstTrack ? 0 : currentTrackIndex-1} isCurrent={isFirstTrack} getColor={getColor}  />
+      <SwatchBox boxIndex={currentTrackIndex} isCurrent={!isFirstTrack && !isLastTrack} getColor={getColor}  />
+      <SwatchBox boxIndex={isLastTrack ? totalTracks-1 : currentTrackIndex+1} isCurrent={isLastTrack} getColor={getColor}  />
+      <span className="text-xs">{totalTracks - 1}</span>
     </div>
   );
 }

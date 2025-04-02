@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Colorful } from "@uiw/react-color";
-import { hsvaToHex } from "@uiw/color-convert";
+import { hsvaToHex, hexToHsva } from "@uiw/color-convert";
 import { GetColorName } from "hex-color-to-color-name";
 import { Track as TrackInterface } from "@/lib/interface";
 import Link from "next/link";
@@ -48,7 +48,7 @@ const AudioPlayer = ({ track }: { track: TrackInterface }) => {
   );
 }
 
-export default function PublicColorsPage({
+export default function CampaignPage({
   pageName,
   tracks,
   user,
@@ -73,40 +73,48 @@ export default function PublicColorsPage({
 
   // Handler function for the pagination display
   const handlePrevious = () => {
-    setCurrentTrackIndex((prevIndex) =>
-      prevIndex > 0 ? prevIndex - 1 : prevIndex
-    );
+    setCurrentTrackIndex((prevIndex) => {
+      const newIndex = prevIndex > 0 ? prevIndex - 1 : prevIndex;
+      const previousTrack = tracks[newIndex];
+      setHsva(hexToHsva(selectedColors[previousTrack.id] || "#ffffff"));
+      return newIndex;
+    });
   };
 
   // Handler function for the pagination display
   const handleNext = () => {
-    setCurrentTrackIndex((prevIndex) =>
-      prevIndex < tracks.length - 1 ? prevIndex + 1 : prevIndex
-    );
+    setCurrentTrackIndex((prevIndex) => {
+      const newIndex = prevIndex < tracks.length - 1 ? prevIndex + 1 : prevIndex;
+      const nextTrack = tracks[newIndex];
+      setHsva(hexToHsva(selectedColors[nextTrack.id] || "#ffffff"));
+      return newIndex;
+    });
   };
 
   /* Handler function for when a user selects a color. This function should:
   * - Store the currently selected hsva color to local storage
-  * - ...
   * - Move the user to the next track, if not at the end of the track list
   */
-  const handleSelect = () => {
+  const handleSelect = async () => {
     // convert hsva to hex for easier storage and display
     const hexColor = hsvaToHex(hsva);
     const currentTrack = tracks[currentTrackIndex];
 
-    // append a new key:value pair of trackId:hexColor and append to the selectedColors object (?)
+    // append a new key:value pair of trackId:hexColor and append to the selectedColors object
     const newSelectedColors = {
       ...selectedColors,
       [currentTrack.id]: hexColor,
     };
     setSelectedColors(newSelectedColors);
-    
+
     // update the local storage with the new selected colors
     localStorage.setItem('selectedColors', JSON.stringify(newSelectedColors));
 
-    // Move the user to the next track, if not at the end of the track list
-    if (currentTrackIndex < tracks.length - 1) {
+    // If at the end of the track list, submit the selection
+    if (currentTrackIndex === tracks.length - 1) {
+      await handleSubmit();
+    } else {
+      // Move the user to the next track
       handleNext();
     }
   };
@@ -129,6 +137,11 @@ export default function PublicColorsPage({
     // redirect the user to the palettes page
     router.push(`/synthesia/${pageName}/palettes`);
   };
+
+  const handleClearSelection = () => {
+    setSelectedColors({});
+    localStorage.removeItem('selectedColors');
+  }
 
   const getColor = (index: number) => {
     const track = tracks[index];
@@ -177,15 +190,16 @@ export default function PublicColorsPage({
                 onClick={handlePrevious}
                 disabled={currentTrackIndex === 0}
                 className="flex-1"
+                size="sm"
               >
                 Previous
               </Button>
               <Button
                 onClick={handleSelect}
-                disabled={currentTrackIndex === tracks.length - 1}
                 className="flex-1"
+                size="sm"
               >
-                Next
+                {currentTrackIndex === tracks.length - 1 ? "Submit" : "Next"}
               </Button>
             </div>
             <div id="progress-swatch" className="flex w-full items-center justify-center gap-8 my-4">
@@ -198,9 +212,13 @@ export default function PublicColorsPage({
                 getColor={getColor}
               />
             </div>
-            <div className="flex w-full my-4">
-              <Button onClick={handleSubmit} className="flex w-full">
-                Submit
+            <div className="flex w-full my-1">
+              <Button
+                onClick={handleClearSelection}
+                className="flex w-full border-solid border border-black"
+                size="sm"
+              >
+                Clear Selection
               </Button>
             </div>
             <div className="flex w-full">
