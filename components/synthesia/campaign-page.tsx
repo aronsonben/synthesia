@@ -12,6 +12,7 @@ import { addColorToTrack } from "@/actions/synthesia/actions";
 import "@/components/ui/styles.css";
 import { cn } from "@/lib/utils";
 import ProgressSwatch from "./progress-swatch";
+import AudioPlayer from "@/components/audio-player";
 
 interface PublicColorsPageProps {
   pageName: string;
@@ -21,11 +22,11 @@ interface PublicColorsPageProps {
 
 const TextBubble = ({ text, variant }: { text: string, variant: string }) => {
   const bubbleBaseStyle = "flex flex-col my-2 items-center gap-2 bg-gray-200 text-black text-sm px-4 py-2 shadow-md max-w-xs self-start"
-  const bubbleVariantStyle = variant === "right" ? "rounded-lg rounded-tr-none" : "rounded-lg rounded-tl-none";
+  const bubbleVariantStyle = variant === "right" ? "self-end rounded-lg rounded-tr-none" : "rounded-lg rounded-tl-none";
   const bubbleRadius = variant === "right" ? "20px 20px 5px 20px" : "20px 20px 20px 5px";
   return (
     <div
-      id="text_bubble1"
+      id="text_bubble"
       className={cn(bubbleBaseStyle, bubbleVariantStyle)}
       style={{
       borderRadius: bubbleRadius,
@@ -36,17 +37,17 @@ const TextBubble = ({ text, variant }: { text: string, variant: string }) => {
   )
 }
 
-const AudioPlayer = ({ track }: { track: TrackInterface }) => {
-  return (
-    <div className="flex flex-col items-center justify-center gap-2" key={track.id} >
-      <p className="">Track {track.id}</p>
-      <audio controls>
-        <source src={track.link} type="audio/mpeg" />
-        Your browser does not support the audio element.
-      </audio>
-    </div>
-  );
-}
+// const AudioPlayer = ({ track }: { track: TrackInterface }) => {
+//   return (
+//     <div className="flex flex-col items-center justify-center gap-2" key={track.id} >
+//       <p className="">Track {track.id}</p>
+//       <audio controls>
+//         <source src={track.link} type="audio/mpeg" />
+//         Your browser does not support the audio element.
+//       </audio>
+//     </div>
+//   );
+// }
 
 export default function CampaignPage({
   pageName,
@@ -59,7 +60,7 @@ export default function CampaignPage({
   const router = useRouter();
 
   useEffect(() => {
-    const storedColors = localStorage.getItem('selectedColors');
+    const storedColors = sessionStorage.getItem('selectedColors');
     if (storedColors) {
       setSelectedColors(JSON.parse(storedColors));
     }
@@ -86,7 +87,13 @@ export default function CampaignPage({
     setCurrentTrackIndex((prevIndex) => {
       const newIndex = prevIndex < tracks.length - 1 ? prevIndex + 1 : prevIndex;
       const nextTrack = tracks[newIndex];
-      setHsva(hexToHsva(selectedColors[nextTrack.id] || "#ffffff"));
+      // if the next color is white, reset the hsva to the default color (blue)
+      setHsva(
+        selectedColors[nextTrack.id] === "#ffffff" ? 
+          { h: 226, s: 0, v: 100, a: 1 } 
+          : 
+          hexToHsva(selectedColors[nextTrack.id])
+      );
       return newIndex;
     });
   };
@@ -108,7 +115,7 @@ export default function CampaignPage({
     setSelectedColors(newSelectedColors);
 
     // update the local storage with the new selected colors
-    localStorage.setItem('selectedColors', JSON.stringify(newSelectedColors));
+    sessionStorage.setItem('selectedColors', JSON.stringify(newSelectedColors));
 
     // If at the end of the track list, submit the selection
     if (currentTrackIndex === tracks.length - 1) {
@@ -132,7 +139,7 @@ export default function CampaignPage({
     
     // reset the selected colors and local storage
     setSelectedColors({});
-    localStorage.removeItem('selectedColors');
+    sessionStorage.removeItem('selectedColors');
 
     // redirect the user to the palettes page
     router.push(`/synthesia/${pageName}/palettes`);
@@ -140,7 +147,7 @@ export default function CampaignPage({
 
   const handleClearSelection = () => {
     setSelectedColors({});
-    localStorage.removeItem('selectedColors');
+    sessionStorage.removeItem('selectedColors');
   }
 
   const getColor = (index: number) => {
@@ -151,12 +158,12 @@ export default function CampaignPage({
   return (
     <div
       id="public-colors-page"
-      className="h-1/2 flex flex-col gap-4 items-center justify-center p-4"
+      className="h-1/2 flex flex-col gap-4 items-center justify-center py-4 px-2 w-full rounded-lg "
       style={{ backgroundColor: hsvaToHex(hsva) }}
     >
-      <div className="flex flex-col">
+      <div className="w-full flex flex-col sm:max-w-[70vw]">
         <div id="pickerbox" className="flex-1 overflow-auto border rounded-lg shadow-lg bg-white dark:bg-black">
-          <div className="flex flex-col justify-center items-center p-4">
+          <div className="flex flex-col justify-center items-center p-4 gap-2">
             <TextBubble text="Listen to this sound..." variant="left" />
             <div id="audio_wrapper" className="flex flex-col my-4 items-center justify-center gap-2">
               {tracks.length > 0 && (
@@ -164,7 +171,7 @@ export default function CampaignPage({
               )}
             </div>
             <TextBubble text="...then pick the color it makes you feel" variant="right" />
-            <div className="flex flex-col my-4 items-center gap-2">
+            <div className="flex flex-col my-4 mb-0 items-center gap-2">
               <Colorful
                 color={hsva}
                 disableAlpha={true}
