@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { PickerPage, Track } from "@/lib/interface";
+import { PickerPage, Profile, Track } from "@/lib/interface";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export const getUserData = async (userName?: string) => {
@@ -30,6 +30,22 @@ export const getUserData = async (userName?: string) => {
   return data.user;
 };
 
+export const getUserIdByName = async (username: string) => {
+  const supabase = await createClient();
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("username", username)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return profile as Profile;
+}
+
 export const getUserProfile = async (user_id: string) => {
   const supabase = await createClient();
 
@@ -43,7 +59,7 @@ export const getUserProfile = async (user_id: string) => {
     throw new Error(error.message);
   }
 
-  return profile;
+  return profile as Profile;
 }
 
 export const getUserTracks = async (user_id: string) => {
@@ -53,6 +69,23 @@ export const getUserTracks = async (user_id: string) => {
     .from("tracks")
     .select("*")
     .eq("user_id", user_id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return tracks;
+};
+
+export const getUserTracksByName = async (username: string) => {
+  const supabase = await createClient();
+
+  const profile = await getUserIdByName(username);
+
+  const { data: tracks, error } = await supabase
+    .from("tracks")
+    .select("*")
+    .eq("user_id", profile.id);
 
   if (error) {
     throw new Error(error.message);
@@ -76,6 +109,26 @@ export const getUserPickerPages = async (user_id: string) => {
 
   return pages;
 }
+
+/** **********************************
+********** Track Functions *********
+*********************************** */
+
+export const getTrackById = async (id: number) => {
+  const supabase = await createClient();
+
+  const { data: track, error } = await supabase
+    .from("tracks")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return track;
+};
 
 /** **********************************
 ********** Get ALL Functions *********
@@ -166,4 +219,17 @@ export const getTracksByPickerPageName = async (pageName: string): Promise<Track
   }
 
   return tracks as Track[];
+}
+
+/** Fetch random track from database */
+export const getRandomTrack = async () => {
+  const supabase = await createClient();
+
+  const { data: track, error } = await supabase.rpc('get_random_track').single();
+  
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return track as Track;
 }

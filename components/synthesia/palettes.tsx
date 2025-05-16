@@ -48,7 +48,7 @@ export default function Palettes({ tracks, user }: PalettesProps) {
             className="flex flex-col flex-wrap gap-2 p-4 my-2 border rounded-lg w-full"
           >
             <div id="audio_wrapper" className="flex flex-col my-4 mt-2 items-start justify-start gap-2">
-              <AudioPlayer track={track.link} />
+              <AudioPlayer link={track.link} track={track} />
             </div>
             <h4 className="font-bold">Track {track.id}</h4>
             <div className="flex flex-wrap w-full">

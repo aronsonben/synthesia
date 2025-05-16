@@ -14,7 +14,8 @@ const linkVariants = cva(
         test: "bg-pink-500 text-xs p-10",
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        active: "border border-white border-input bg-[#307DA5] text-white hover:bg-accent hover:text-accent-foreground"
+        active: "border border-white border-input bg-[#307DA5] text-white hover:bg-accent hover:text-accent-foreground",
+        inline: "inline bg-none underline",
       },
       size: {
         default: "h-10 px-4 py-2",

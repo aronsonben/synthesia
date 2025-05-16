@@ -1,7 +1,6 @@
-
+import Link from "next/link";
 import Swatch from "@/components/swatch";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getUserData } from "@/utils/supabase/fetchData";
 import { Button } from "@/components/ui/button";
 
