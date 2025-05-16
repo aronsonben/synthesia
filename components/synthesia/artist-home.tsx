@@ -30,7 +30,7 @@ export default function ArtistHome({ tracks, user, campaigns }: TracksProps) {
       <ManageTable type="campaigns" tracks={tracks} campaigns={campaigns} />
       <ManageTable type="tracks" tracks={tracks} campaigns={campaigns} />
       {/* v0 code */}
-      <div
+      {/* <div
         className="flex flex-col w-full border rounded-lg shadow-lg p-4"
         id="manage-tracks"
       >
@@ -46,7 +46,7 @@ export default function ArtistHome({ tracks, user, campaigns }: TracksProps) {
             </div>
           )}
         </>
-      </div>
+      </div> */}
     </main>
   );
 }

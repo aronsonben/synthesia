@@ -11,7 +11,7 @@ interface TrackProps {
   track: TrackInterface;
 }
 
-export default function ArtistPage({ track }: TrackProps) {
+export default function TrackPage({ track }: TrackProps) {
   const router = useRouter();
   const randomColor = randomHex();
 
@@ -29,9 +29,11 @@ export default function ArtistPage({ track }: TrackProps) {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">{track.title}</h1>
           <p className="text-sm text-gray-500">
-            <Link href={`/${artistName}/${track.id}`}>
+            {/* TODO: figure way to get artistName from params */}
+            {/* <Link href={`/${artistName}/${track.id}`}>
               {track.title}
-            </Link>
+            </Link> */}
+            {track.title}
           </p>
         </div>
       </div>

@@ -20,7 +20,7 @@ export default async function AuthButton() {
       <AvatarPrimitive.Root 
         className="inline-flex items-center justify-center align-middle overflow-hidden select-none w-11 h-11 rounded-full bg-black/30">
         <AvatarPrimitive.Image 
-          src={profile.avatar_url} 
+          src={profile?.avatar_url} 
           alt={user.email} 
           className="w-full h-full object-cover rounded-inherit"/>
         <AvatarPrimitive.Fallback 
