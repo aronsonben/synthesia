@@ -20,6 +20,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const landingColors = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c"];
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
@@ -34,7 +35,13 @@ export default function RootLayout({
               <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-4 items-center font-semibold">
-                    <Link href={"/"}>Synthesia</Link>
+                    <Link href={"/"}>
+                    <div className="flex">
+                      {landingColors.map((color, index) => (
+                      <div key={index} className="w-4 h-4" style={{ backgroundColor: color }}></div>
+                      ))}
+                    </div>
+                    </Link>
                     <div className="flex items-center gap-2">
                       <ThemeSwitcher />
                     </div>
