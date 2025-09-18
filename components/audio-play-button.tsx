@@ -3,13 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import type { Track as TrackInterface, Profile} from "@/lib/interface";
 
-interface AudioPlayerProps {
+interface AudioButtonProps {
   track: TrackInterface,
   link?: string;
   user?: Profile;
 } 
 
-export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
+export default function AudioButtonButton({ track, link, user }: AudioButtonProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -25,10 +25,10 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) {
-      console.log("Audio element not found.");
+      // console.log("Audio element not found.");
       return;
     }
-    console.log("[AudioPlayer] Initializing with source:", audioSrc);
+    // console.log("[AudioButton] Initializing with source:", audioSrc);
 
     // Reset states when audio source changes
     setIsLoading(true);
@@ -37,22 +37,22 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
     setProgress(0);
 
     const handleLoadStart = () => {
-      console.log("[AudioPlayer] loadstart: Started loading audio");
+      // console.log("[AudioButton] loadstart: Started loading audio");
       setIsLoading(true);
     };
 
     const handleLoadedMetadata = () => {
-      console.log("[AudioPlayer] loadedmetadata: Duration set to", audio.duration);
+      // console.log("[AudioButton] loadedmetadata: Duration set to", audio.duration);
       setDuration(audio.duration);
     };
 
     const handleCanPlay = () => {
-      console.log("[AudioPlayer] canplay: Audio is ready to play");
+      // console.log("[AudioButton] canplay: Audio is ready to play");
       setIsLoading(false);
     };
 
     const handleLoadedData = () => {
-      console.log("[AudioPlayer] loadeddata: Audio data is loaded");
+      // console.log("[AudioButton] loadeddata: Audio data is loaded");
     };
 
     const handleTimeUpdate = () => {
@@ -62,7 +62,7 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
     };
 
     const handleEnded = () => {
-      console.log("[AudioPlayer] ended: Playback finished");
+      // console.log("[AudioButton] ended: Playback finished");
       setIsPlaying(false);
       setCurrentTime(0);
       setProgress(0);
@@ -89,22 +89,22 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
         }
       }
       
-      console.error("[AudioPlayer] Error:", errorMessage, target.error);
+      console.error("[AudioButton] Error:", errorMessage, target.error);
       setError(errorMessage);
       setIsLoading(false);
     };
 
     const handleStalled = () => {
-      console.log("[AudioPlayer] stalled: Playback stalled");
+      // console.log("[AudioButton] stalled: Playback stalled");
       setError('Audio playback stalled. Check your connection.');
     };
 
     const handleSuspend = () => {
-      console.log("[AudioPlayer] suspend: Browser has stopped loading");
+      // console.log("[AudioButton] suspend: Browser has stopped loading");
     };
 
     const handleWaiting = () => {
-      console.log("[AudioPlayer] waiting: Playback waiting for data");
+      // console.log("[AudioButton] waiting: Playback waiting for data");
       setIsLoading(true);
     };
 
@@ -151,7 +151,7 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log("Progress bar clicked");
+    // console.log("Progress bar clicked");
     const audio = audioRef.current;
     if (!audio || duration == null) return;
 
@@ -176,25 +176,20 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
   }
 
   return (
-    <div className="bg-black rounded-xl p-6 max-w-md mx-auto shadow-lg w-full" key={track?.id} >
+    <div className=" rounded-xl max-w-md" key={track?.id} >
       {/* Hidden audio element */}
       <audio ref={audioRef} src={audioSrc} key={audioSrc}>
         Your browser does not support the audio element.
       </audio>
 
-      {/* Track Title */}
-      <div className="text-left mb-4">
-        <p className="text-amber-400 font-medium text-sm">{trackTitle}</p>
-      </div>
-
       {/* Combine Play Button & Custom Progress bar into one row */}
-      <div className="flex items-center mb-2 gap-8">
+      <div className="flex items-center gap-8">
           {/* Play Button */}
           <div className="flex justify-center">
             <button
               onClick={togglePlayPause}
               disabled={isLoading}
-            className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-12 h-12 bg-white border-solid border-2 border-black rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="w-6 h-6 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin"></div>
@@ -207,19 +202,6 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
               <div className="w-0 h-0 border-l-[12px] border-l-slate-800 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
             )}
           </button>
-        </div>
-
-        {/* Custom Progress Bar */}
-        <div className="w-full">
-          <div
-            className="w-full h-8 bg-slate-600 rounded-md cursor-pointer hover:bg-slate-500 transition-colors duration-200"
-            onClick={handleProgressClick}
-          >
-            <div
-              className="h-full bg-amber-400 rounded-md transition-all duration-100 ease-out"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
         </div>
       </div>
     </div>

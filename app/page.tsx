@@ -15,7 +15,7 @@ export default async function Home() {
   const trackUser = await getUserProfileCached(track.user_id);
   // const trackUser = await getUserProfile(track.user_id);
   console.log(trackUser);
-  console.log("Random Track! ", track);
+  // console.log("Random Track! ", track);
 
   if(!track || !trackUser) {
     console.log('no track found!')
@@ -34,6 +34,7 @@ export default async function Home() {
               <p className="text-xs">...then select the color you hear:</p>
             </div>
             <PickerWidget track={track} />
+            <CustomLink href={"/palettes"} variant="outline" size="synth" className="w-full">View Palettes</CustomLink>
           </div>
         </div>
       </main>

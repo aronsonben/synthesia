@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 export default async function SynthesiaHome() {
   const user = await getUserData();
 
-  if (!user) {
-    return redirect("/");
-  }
+  // Removing auth as part of simplification process (Sept '25)
+  // if (!user) {
+  //   return redirect("/");
+  // }
 
   return (
     <div>

@@ -39,7 +39,10 @@ export default function PickerWidget({ track }: PickerWidgetProps) {
     const palette = track.colors;
 
     // 3. Replace picker widget with palette display & button offering user to "pick again"
-    setUsedPickerWidget(true);
+    // setUsedPickerWidget(true);
+
+    // 4. Reset to base color
+    setHsva({ h: 226, s: 0, v: 100, a: 1 });
   };
 
   return (

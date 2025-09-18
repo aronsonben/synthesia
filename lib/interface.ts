@@ -17,6 +17,21 @@ export interface Track {
   inserted_at: Date;
 }
 
+export interface TrackWithAnalysis extends Track {
+  colorAnalysis: ColorAnalysisResult;
+}
+
+export interface ColorAnalysisResult {
+  averageHue: number;
+  averageSaturation: number;
+  averageLightness: number;
+  // dominantHue: number;
+  // deltaEFromWhite: number;
+  // colorHarmony: 'complementary' | 'analogous' | 'triadic' | 'none';
+  // colorTemperature: number;
+  // ... placeholders ... other metrics
+}
+
 export interface Profile {
   id: string;
   username: string;

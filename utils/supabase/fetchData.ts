@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { PickerPage, Profile, Track } from "@/lib/interface";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { analyzeTrackColors } from '@/utils/colorAnalysis';
+import { TrackWithAnalysis } from '@/lib/interface';
 
 export const getUserData = async (userName?: string) => {
   const supabase = await createClient();
@@ -220,6 +222,20 @@ export const getTracksByPickerPageName = async (pageName: string): Promise<Track
 
   return tracks as Track[];
 }
+
+export const getTracksWithAnalysisByPickerPageName = async (
+  pageName: string
+): Promise<TrackWithAnalysis[]> => {
+  const tracks = await getTracksByPickerPageName(pageName);
+  
+  const trackTitles = ['ethereal', 'pecans', 'bossasausa', 'porcho', 'waxxx', 'riverdalestation'];
+  // const trackTitlesLess = ['ethereal'];
+  const trackSubset = tracks.filter(track => trackTitles.includes(track.title.toLowerCase()));
+  return trackSubset.map(track => ({
+    ...track,
+    colorAnalysis: analyzeTrackColors(track.title, track.colors)
+  }));
+};
 
 /** Fetch random track from database */
 export const getRandomTrack = async () => {
