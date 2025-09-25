@@ -22,18 +22,18 @@ export default function RootLayout({
 }) {
   const landingColors = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c"];
   return (
-    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-      <body className="bg-background text-foreground">
+    <html lang="en" className={`${GeistSans.className} h-full`} suppressHydrationWarning>
+      <body className="bg-background text-foreground h-full">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
+          <main className="min-h-screen flex flex-col items-center h-full">
             <div className="flex-1 w-full flex flex-col justify-between items-center">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
+              <nav className="static top-0 w-full flex justify-center border-b border-b-foreground/10 h-8 bg-white/30 backdrop-blur-md z-50">
+                <div className="w-full max-w-5xl flex justify-center items-center px-5 text-sm">
                   <div className="flex gap-4 items-center font-semibold">
                     <Link href={"/"}>
                     <div className="flex">
@@ -42,18 +42,18 @@ export default function RootLayout({
                       ))}
                     </div>
                     </Link>
-                    <div className="flex items-center gap-2">
+                    {/* <div className="flex items-center gap-2">
                       <ThemeSwitcher />
-                    </div>
+                    </div> */}
                     {/* <Link href={"/synthesia/stolimpico-full"} className="w-6 h-6 bg-blue-950 rounded-full" /> */}
                   </div>
-                  <HeaderAuth />
+                  {/* <HeaderAuth /> */}
                 </div>
               </nav>
-              <div className="flex-1 flex flex-col gap-20 max-w-5xl w-full">
+              <div id="layout-full-container" className="flex-1 flex flex-col gap-20 max-w-5xl w-full min-h-screen">
                 {children}
               </div>
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-2">
+              <footer className="fixed bottom-0 w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-2 bg-white/30 backdrop-blur-md text-white z-50">
                 <p>
                   another{" "}
                   <a

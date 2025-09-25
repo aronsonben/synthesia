@@ -15,13 +15,15 @@ import { cn } from "@/lib/utils";
 import ProgressSwatch from "./progress-swatch";
 import AudioPlayer from "@/components/audio-player";
 import Swatch from "../swatch";
+import { revalidatePath } from "next/cache";
 
 interface PickerWidgetProps {
   track: TrackInterface;
+  hsva: { h: number; s: number; v: number; a: number; };
+  setHsva: (hsva: { h: number; s: number; v: number; a: number; }) => void;
 }
 
-export default function PickerWidget({ track }: PickerWidgetProps) {
-  const [hsva, setHsva] = useState({ h: 226, s: 0, v: 100, a: 1 });
+export default function PickerWidget({ track, hsva, setHsva }: PickerWidgetProps) {
   const [usedPickerWidget, setUsedPickerWidget] = useState(false);
   const router = useRouter();
 
@@ -33,7 +35,10 @@ export default function PickerWidget({ track }: PickerWidgetProps) {
   const handleSubmit = async () => {
     // 1. Save submitted hex color to db
     const hexColor = hsvaToHex(hsva);
-    await addColorToTrack(track, hexColor);
+    // await addColorToTrack(track, hexColor);
+
+    // TEMP FOR TESTING:
+    router.push("/palettes");
 
     // 2. Fetch palette for current track via track object
     const palette = track.colors;

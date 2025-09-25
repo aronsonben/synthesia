@@ -17,7 +17,17 @@ export const analyzeTrackColors = (title: string, colors: string[]): ColorAnalys
 
   // Ignore white as it is most often a test color or mistake
   console.log('Performing analysis for: ', title);
-  const colorsNoWhite = colors.filter((c) => (c.toLocaleLowerCase() !== '#ffffff'))
+  const colorsNoWhite = colors.filter((c) => (c.toLocaleLowerCase() !== '#ffffff'));
+
+  // If no colors left after filtering, return default
+  if (colorsNoWhite.length === 0) {
+    console.log('All colors were white, returning default analysis.');
+    return {
+      averageHue: 0,
+      averageSaturation: 0,
+      averageLightness: 1
+    };
+  }
   
   // Only do expensive calculation if we haven't seen these colors before
   console.log('Cache miss. Calculating...');

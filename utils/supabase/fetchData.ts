@@ -230,7 +230,8 @@ export const getTracksWithAnalysisByPickerPageName = async (
   
   const trackTitles = ['ethereal', 'pecans', 'bossasausa', 'porcho', 'waxxx', 'riverdalestation'];
   // const trackTitlesLess = ['ethereal'];
-  const trackSubset = tracks.filter(track => trackTitles.includes(track.title.toLowerCase()));
+  // const trackSubset = tracks.filter(track => trackTitles.includes(track.title.toLowerCase()));
+  const trackSubset = tracks; // Use all tracks for now
   return trackSubset.map(track => ({
     ...track,
     colorAnalysis: analyzeTrackColors(track.title, track.colors)

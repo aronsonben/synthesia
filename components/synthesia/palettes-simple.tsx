@@ -10,6 +10,15 @@ import Link from "next/link";
 import chroma from "chroma-js";
 import "@/components/ui/styles.css";
 
+export const ColorBlock = (color: string) => (
+    <div
+      className="flex w-6 h-6"
+      style={{ 
+        backgroundColor: color,
+        border: "1px solid black"
+      }}
+    ></div>
+)
 
 /**
  * Simplifiying the palettes page specifically for STOLIMPICO (Sept. '25)
@@ -35,13 +44,13 @@ export default function PalettesSimple({ tracks }: { tracks: TrackWithAnalysis[]
   };
 
   return (
-    <div className="h-1/2 flex flex-col items-center justify-between w-full" id="palettes">
-      <div className="flex flex-col items-center justify-center py-2">
+    <div className="h-1/2 flex flex-col items-center justify-between w-full pt-8" id="palettes">
+      <div className="flex flex-col items-center justify-center py-2 gap-2">
         <h2 className="text-2xl font-bold">Palettes</h2>
-        {/* <p className="text-sm">Sorted by: chronological</p> */}
+        <p className="text-xs">Note: white is ignored in color analysis</p>
         {/* <Button onClick={sortByDeltaE}>Sort by Delta E</Button> */}
       </div>
-      <div className="flex flex-col w-full md:justify-center md:items-center">
+      <div id="palettes-holder" className="flex flex-col w-[90vw] md:w-full md:justify-center md:items-center">
         {tracks.map((track) => {
           const analysis = track.colorAnalysis;
           const hue = analysis.averageHue.toFixed(2);
@@ -49,8 +58,9 @@ export default function PalettesSimple({ tracks }: { tracks: TrackWithAnalysis[]
           const lightness = (analysis.averageLightness * 100).toFixed(2);
           return(
             <div
+              id={`palette_card_${track.id}`}
               key={track.id}
-              className="flex flex-col flex-wrap gap-2 p-4 my-2 border rounded-lg w-full md:max-w-lg "
+              className="flex flex-col flex-wrap gap-2 p-4 my-2 border rounded-lg w-full bg-white dark:bg-gray-800 md:max-w-lg "
             >
               <div id="audio_wrapper" className="flex my-2 items-center justify-start content-center gap-4">
                 <AudioPlayerButton link={track.link} track={track} />
