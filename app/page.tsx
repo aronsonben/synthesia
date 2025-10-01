@@ -1,23 +1,25 @@
 import { cache } from 'react'
 import HomeWrapper from "@/components/synthesia/home-wrapper";
-import { getUserData, getUserProfile, getRandomTrack } from "@/utils/supabase/fetchData";
+import { getUserData, getUserProfile, getRandomTrack, getAllTracks } from "@/utils/supabase/fetchData";
 
 const getRandomTrackCached = cache(getRandomTrack);
+const getAllTracksCached = cache(getAllTracks);
 const getUserProfileCached = cache(getUserProfile);
 
 export default async function Home() {
 
   const user = await getUserData();
-  const track = await getRandomTrackCached();
-  // const track = await getRandomTrack();
+  const tracks = await getAllTracksCached();
+
+  // Get the first three tracks (for now)
+  const tracksSubset = tracks.slice(0, 3);
+  const track = tracksSubset[0];
+  // const randomIndex = Math.floor(Math.random() * tracks.length);
   const trackUser = await getUserProfileCached(track.user_id);
-  // const trackUser = await getUserProfile(track.user_id);
-  console.log(trackUser);
-  // console.log("Random Track! ", track);
 
   if(!track || !trackUser) {
     console.log('no track found!')
   }
 
-  return <HomeWrapper track={track} trackUser={trackUser} />;
+  return <HomeWrapper track={track} trackUser={trackUser} tracks={tracksSubset} />;
 }

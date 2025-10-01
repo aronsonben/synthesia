@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { PickerPage, Profile, Track } from "@/lib/interface";
+import { PickerPage, Profile, Track, TrackWithDbAnalysis, ColorAnalysisRow } from "@/lib/interface";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { analyzeTrackColors } from '@/utils/colorAnalysis';
 import { TrackWithAnalysis } from '@/lib/interface';
@@ -166,19 +166,67 @@ export const getAllPickerPages = async (): Promise<PickerPage[]> => {
   return pages as PickerPage[];
 }
 
-export const getAllTracks = async () => {
+export const getAllTracks = async (): Promise<TrackWithAnalysis[]> => {
   const supabase = await createClient();
 
+  // 1. Fetch tracks with any existing color_analysis row
   const { data: tracks, error } = await supabase
     .from("tracks")
-    .select("*");
+    .select("*, color_analysis(*)")
+    .order('track_order', { ascending: true }) as { data: TrackWithDbAnalysis[] | null, error: any };
 
   if (error) {
     throw new Error(error.message);
   }
 
+  if (!tracks) return [];
+
+  // 2. Lazily compute analyses for tracks missing them
+  const tracksNeedingAnalysis = tracks.filter(t => !t.color_analysis);
+
+  if (tracksNeedingAnalysis.length > 0) {
+    console.log(`[getAllTracks] Computing color analysis for ${tracksNeedingAnalysis.length} tracks (lazy).`);
+
+    const rowsToInsert = tracksNeedingAnalysis.map(t => {
+      const computed = analyzeTrackColors(t.title, t.colors);
+      return {
+        track_id: t.id,
+        hue: computed.averageHue,
+        sat: computed.averageSaturation,
+        lum: computed.averageLightness
+      };
+    });
+
+    // 3. Upsert into color_analysis table (track_id should be UNIQUE in schema)
+    const { error: upsertError } = await supabase
+      .from('color_analysis')
+      .upsert(rowsToInsert, { onConflict: 'track_id' });
+
+    if (upsertError) {
+      console.error('[getAllTracks] Failed to upsert color analyses', upsertError);
+    } else {
+      console.log('[getAllTracks] Color analyses upserted:', rowsToInsert.length);
+    }
+
+    // 4. Re-fetch only the updated subset to get created_at & ids populated (avoid refetching all if large dataset)
+    const updatedIds = rowsToInsert.map(r => r.track_id);
+    const { data: refreshedSubset, error: refreshError } = await supabase
+      .from('tracks')
+      .select('*, color_analysis(*)')
+      .in('id', updatedIds) as { data: TrackWithDbAnalysis[] | null, error: any };
+    if (!refreshError && refreshedSubset) {
+      // Merge refreshed subset back into main array
+      const refreshedMap = new Map<number, TrackWithDbAnalysis>(refreshedSubset.map(t => [t.id, t]));
+      for (let i = 0; i < tracks.length; i++) {
+        if (refreshedMap.has(tracks[i].id)) {
+          tracks[i] = refreshedMap.get(tracks[i].id)!;
+        }
+      }
+    }
+  }
+
   return tracks;
-}
+};
 
 /** **********************************
 ********** Misc. Functions *********
@@ -225,17 +273,18 @@ export const getTracksByPickerPageName = async (pageName: string): Promise<Track
 
 export const getTracksWithAnalysisByPickerPageName = async (
   pageName: string
-): Promise<TrackWithAnalysis[]> => {
+): Promise<TrackWithAnalysis[]|null> => {
   const tracks = await getTracksByPickerPageName(pageName);
   
   const trackTitles = ['ethereal', 'pecans', 'bossasausa', 'porcho', 'waxxx', 'riverdalestation'];
   // const trackTitlesLess = ['ethereal'];
   // const trackSubset = tracks.filter(track => trackTitles.includes(track.title.toLowerCase()));
   const trackSubset = tracks; // Use all tracks for now
-  return trackSubset.map(track => ({
-    ...track,
-    colorAnalysis: analyzeTrackColors(track.title, track.colors)
-  }));
+  // return trackSubset.map(track => ({
+  //   ...track,
+  //   colorAnalysis: analyzeTrackColors(track.title, track.colors)
+  // }));
+  return null;
 };
 
 /** Fetch random track from database */

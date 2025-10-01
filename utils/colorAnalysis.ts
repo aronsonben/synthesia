@@ -1,6 +1,6 @@
 // utils/colorAnalysis.ts (new file)
 import chroma from 'chroma-js';
-import { ColorAnalysisResult } from '@/lib/interface';
+import { ColorAnalysisResult, TrackWithAnalysis } from '@/lib/interface';
 
 // This Map stores results in memory
 const analysisCache = new Map<string, ColorAnalysisResult>();

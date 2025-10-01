@@ -39,7 +39,7 @@ export default async function Home() {
         <div className="w-full flex flex-col justify-center items-center gap-8">
           <div id="campaign-widget" className="flex flex-col justify-center items-center gap-2 w-full p-4 rounded border border-gray-200 sm:flex-row">
             <AudioPlayer track={track} user={trackUser} />
-            <PickerWidget track={track} />
+            {/* <PickerWidget track={track} /> */}
           </div>
           <div className="flex w-full gap-2">
             {user && (<CustomLink href="/synthesia" size="sm" className="w-full ">Dashboard</CustomLink>)}

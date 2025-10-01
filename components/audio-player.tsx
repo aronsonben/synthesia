@@ -7,9 +7,10 @@ interface AudioPlayerProps {
   track: TrackInterface,
   link?: string;
   user?: Profile;
+  hideInfo?: boolean;
 } 
 
-export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
+export default function AudioPlayer({ track, link, user, hideInfo }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -20,7 +21,8 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
 
   // const audioSrc = link || track?.link;
   const audioSrc = track.link;
-  const trackTitle = `${user?.username || "Unknown"} - ${track?.title || ""}`;
+  const trackTitle = track.title;
+  // const trackTitle = `${user?.username || "Unknown"} - ${track?.title || ""}`;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -176,16 +178,18 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
   }
 
   return (
-    <div className="bg-black rounded-xl p-6 max-w-md mx-auto shadow-lg w-full" key={track?.id} >
+    <div className="bg-white border border-solid border-[gainsboro] rounded-xl p-6 max-w-md mx-auto shadow-lg w-full" key={track?.id} >
       {/* Hidden audio element */}
       <audio ref={audioRef} src={audioSrc} key={audioSrc}>
         Your browser does not support the audio element.
       </audio>
 
       {/* Track Title */}
-      <div className="text-left mb-4">
-        <p className="text-amber-400 font-medium text-sm">{trackTitle}</p>
-      </div>
+      {!hideInfo && ( 
+        <div className="text-left mb-4">
+          <p className="text-black font-medium text-sm"><span className="font-semibold">Track Title: </span>{trackTitle}</p>
+        </div>
+      )}
 
       {/* Combine Play Button & Custom Progress bar into one row */}
       <div className="flex items-center mb-2 gap-8">
@@ -194,7 +198,7 @@ export default function AudioPlayer({ track, link, user }: AudioPlayerProps) {
             <button
               onClick={togglePlayPause}
               disabled={isLoading}
-            className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-12 h-12 bg-white border border-solid border-slate-400 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="w-6 h-6 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin"></div>

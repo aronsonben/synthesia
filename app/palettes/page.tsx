@@ -1,8 +1,6 @@
 import PalettesSimple from "@/components/synthesia/palettes-simple";
 import { 
-  getUserData, 
-  getTracksByPickerPageName,
-  getTracksWithAnalysisByPickerPageName } 
+  getAllTracks} 
 from "@/utils/supabase/fetchData";
 
 /**
@@ -12,12 +10,12 @@ from "@/utils/supabase/fetchData";
  * @returns 
  */
 export default async function SimplePalettesPage() {
-  // const tracks = await getTracksByPickerPageName('stolimpico-full');
-  const tracksWithAnalysis = await getTracksWithAnalysisByPickerPageName('stolimpico-full');
+  const tracks = await getAllTracks();
+  // const tracksWithAnalysis = await getTracksWithAnalysisByPickerPageName('stolimpico-full');
 
-  if (!tracksWithAnalysis) {
+  if (!tracks) {
     throw new Error("No tracks found for this page!");
   }
 
-  return <PalettesSimple tracks={tracksWithAnalysis} />;
+  return <PalettesSimple tracks={tracks} />;
 }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Colorful } from "@uiw/react-color";
 import { hsvaToHex, hexToHsva } from "@uiw/color-convert";
 import { GetColorName } from "hex-color-to-color-name";
-import { Track as TrackInterface } from "@/lib/interface";
+import { Track as TrackInterface, TrackWithAnalysis } from "@/lib/interface";
 import Link from "next/link";
 import { CustomLink } from "@/components/ui/link";
 import { Button } from "@/components/ui/button";
@@ -18,36 +18,35 @@ import Swatch from "../swatch";
 import { revalidatePath } from "next/cache";
 
 interface PickerWidgetProps {
-  track: TrackInterface;
+  track: TrackWithAnalysis;
   hsva: { h: number; s: number; v: number; a: number; };
   setHsva: (hsva: { h: number; s: number; v: number; a: number; }) => void;
+  submitted: boolean;
+  setSubmitted: (submitted: boolean) => void;
+  setColorName: (colorName: string) => void;
+  tracksCompleted: TrackWithAnalysis[];
+  setTracksCompleted: (tracksCompleted: TrackWithAnalysis[]) => void;
 }
 
-export default function PickerWidget({ track, hsva, setHsva }: PickerWidgetProps) {
+export default function PickerWidget({ track, hsva, setHsva, submitted, setSubmitted, setColorName, tracksCompleted, setTracksCompleted }: PickerWidgetProps) {
   const [usedPickerWidget, setUsedPickerWidget] = useState(false);
   const router = useRouter();
 
-  /* New submit flow:
-   * 1. Save the submitted hex color to the db via 'addColorToTrack'
-   * 2. Fetch palette for current track
-   * 3. Replace picker widget with palette display & button offering user to "pick again"
-   */
   const handleSubmit = async () => {
     // 1. Save submitted hex color to db
     const hexColor = hsvaToHex(hsva);
-    // await addColorToTrack(track, hexColor);
-
-    // TEMP FOR TESTING:
-    router.push("/palettes");
+    await addColorToTrack(track, hexColor);
 
     // 2. Fetch palette for current track via track object
     const palette = track.colors;
 
     // 3. Replace picker widget with palette display & button offering user to "pick again"
-    // setUsedPickerWidget(true);
+    setSubmitted(true);
+    setColorName(GetColorName(hexColor));
+    setTracksCompleted([...tracksCompleted, track]);
 
     // 4. Reset to base color
-    setHsva({ h: 226, s: 0, v: 100, a: 1 });
+    // ** being done in home-wrapper **
   };
 
   return (

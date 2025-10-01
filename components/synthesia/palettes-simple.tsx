@@ -52,10 +52,14 @@ export default function PalettesSimple({ tracks }: { tracks: TrackWithAnalysis[]
       </div>
       <div id="palettes-holder" className="flex flex-col w-[90vw] md:w-full md:justify-center md:items-center">
         {tracks.map((track) => {
-          const analysis = track.colorAnalysis;
-          const hue = analysis.averageHue.toFixed(2);
-          const saturation = (analysis.averageSaturation * 100).toFixed(2);
-          const lightness = (analysis.averageLightness * 100).toFixed(2);
+          const analysis = track.color_analysis;
+          // This null check should eventually be removed once I figure out how to ensure colorAnalysis is never null...?
+          let hue = "0", saturation = "0", lightness = "0";
+          if(analysis) {
+            hue = analysis.hue.toFixed(2);
+            saturation = (analysis.sat * 100).toFixed(2);
+            lightness = (analysis.lum * 100).toFixed(2);
+          } 
           return(
             <div
               id={`palette_card_${track.id}`}

@@ -17,10 +17,17 @@ export interface Track {
   inserted_at: Date;
 }
 
-export interface TrackWithAnalysis extends Track {
-  colorAnalysis: ColorAnalysisResult;
+// Row stored in the color_analysis table
+export interface ColorAnalysisRow {
+  id: number;
+  track_id: number; // FK to tracks.id
+  created_at: string; // Supabase returns timestamps as strings (ISO)
+  hue: number; // averageHue
+  sat: number; // averageSaturation
+  lum: number; // averageLightness
 }
 
+// Original color analysis interface defined prior to table being set up
 export interface ColorAnalysisResult {
   averageHue: number;
   averageSaturation: number;
@@ -31,6 +38,22 @@ export interface ColorAnalysisResult {
   // colorTemperature: number;
   // ... placeholders ... other metrics
 }
+
+export interface TrackWithAnalysis extends Track {
+  color_analysis?: ColorAnalysisRow | null;
+}
+
+// Track joined with (optional) color_analysis row from the DB
+export interface TrackWithDbAnalysis extends Track {
+  color_analysis?: ColorAnalysisRow | null;
+}
+
+// export interface TrackWithAnalysis extends Track {
+//   colorAnalysis: ColorAnalysisResult;
+// }
+
+
+
 
 export interface Profile {
   id: string;

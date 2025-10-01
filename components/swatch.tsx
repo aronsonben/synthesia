@@ -21,6 +21,7 @@ const swatchVariants = cva(
 type SwatchProps = {
   swatch: string[],
   size?: "sm" | "md" | "lg",
+  highlightLast?: boolean
 };
 
 export default function Swatch(props: SwatchProps) {
@@ -32,7 +33,7 @@ export default function Swatch(props: SwatchProps) {
             className={cn(swatchVariants({ size: props.size || "md" }))}
             style={{ 
               backgroundColor: color,
-              border: "1px solid black"
+              border: (index == props.swatch.length-1 && props.highlightLast) ? "3px solid gold" : "1px solid black"
             }}
           ></div>
         ))}
