@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { hsvaToHex } from "@uiw/color-convert";
 import { Track as TrackInterface, TrackWithAnalysis, Profile } from "@/lib/interface";
 import AudioPlayer from "@/components/audio-player";
@@ -30,10 +31,13 @@ const ColorInfoBlock = ({ track, showTitle = true }: { track: TrackWithAnalysis,
 );
 
 export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperProps) {
+  const router = useRouter();
   const [hsva, setHsva] = useState({ h: 226, s: 0, v: 100, a: 1 });
-  const [hex, setHex] = useState("#ffffff");
+  const [hex, setHex] = useState<string>("#ffffff");
+  const [backgroundColor, setBackgroundColor] = useState<string>(hsvaToHex(hsva));
   const [currentTrack, setCurrentTrack] = useState<TrackWithAnalysis>(track);
   const [tracksCompleted, setTracksCompleted] = useState<TrackWithAnalysis[]>([]);
+  const [lastSubmittedColor, setLastSubmittedColor] = useState<string>("#ffffff");
   // Submission state
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -41,7 +45,6 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
   const [colorName, setColorName] = useState("");
 
   const limit = 3;
-  const backgroundColor = hsvaToHex(hsva);
 
   // Color analysis details
   const analysis = track.color_analysis;
@@ -55,11 +58,14 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
   } 
 
   useEffect(() => {
+    console.log("Updating hex", hsva);
     setHex(hsvaToHex(hsva));
+    setBackgroundColor(hsvaToHex(hsva))
   }, [hsva]);
 
   useEffect(() => {
-    console.log("Fired because tracksCompleted updated");
+    console.log("tracksCompleted Update: ", tracksCompleted);
+    setLastSubmittedColor(hex);
     if (tracksCompleted.length >= limit) {
       console.log("Completed!");
       setCompleted(true);
@@ -71,7 +77,7 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
   const handleNextTrack = () => {
     // 1. Reset states
     setSubmitted(false);
-    setHsva({ h: 226, s: 0, v: 100, a: 1 });
+    // setHsva({ h: 226, s: 0, v: 100, a: 1 });
     setColorName("");
 
     // 2. Set next track (current index always start at 0 because tracks are sorted by track_order asc)
@@ -79,6 +85,19 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
     const nextIndex = (currentIndex + 1) % tracks.length;
     setCurrentTrack(tracks[nextIndex]);
     console.log("Next track: ", tracks[nextIndex]);
+  }
+
+  const handleReset = (full?: boolean) => {
+    setTracksCompleted([])
+    setLastSubmittedColor("#ffffff");
+    setColorName("");
+    setHsva({ h: 226, s: 0, v: 100, a: 1 });
+    setSubmitted(false);
+    setCompleted(false);
+
+    if(full) {
+      setCurrentTrack(track);
+    }
   }
 
   return (
@@ -93,17 +112,17 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
             <div id="user-pick" className="flex flex-col justify-start items-start gap-2 w-full py-4">
               <p className="text-xs self-start">your pick:</p>
               <div className="flex justify-start items-start gap-2">
-                <Swatch swatch={[currentTrack.colors.concat(hex)[currentTrack.colors.length]]} size="lg" />
+                <Swatch swatch={[lastSubmittedColor]} size="lg" />
                 <div className="flex flex-col justify-start items-start">
-                  <p>{[currentTrack.colors.concat(hex)[currentTrack.colors.length]]}</p>
-                  <p>{GetColorName(currentTrack.colors.concat(hex)[currentTrack.colors.length])}</p>
+                  <p>{lastSubmittedColor}</p>
+                  <p>{GetColorName(lastSubmittedColor)}</p>
                 </div>
               </div>
             </div>
             <div id="community-picks" className="flex flex-col justify-start items-start gap-2 w-full py-4">
               <p className="text-xs self-start">community picks:</p>
               <div className="flex justify-start items-start gap-2 w-full">
-                <Swatch swatch={currentTrack.colors.concat(hex)} size="md" highlightLast />
+                <Swatch swatch={currentTrack.colors.concat(lastSubmittedColor)} size="md" highlightLast />
               </div>
               <p className="text-[9px] self-start">your selection highlighted in <span className="text-[#ffd700]">gold</span>.</p>
             </div>
@@ -133,7 +152,7 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
                 className="flex-1"
                 size="sm"
               >
-                {tracksCompleted.length-1 == 3 ? "Next Track" : "Finish"}
+                {tracksCompleted.length == 3 ? "Finish" : "Next Track"}
               </Button>
               {/* Progress bar from 1 to limit */}
               <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
@@ -146,6 +165,9 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
                 <span>{tracksCompleted.length} / {limit} completed</span>
                 <span>{limit - (tracksCompleted.length)} to go</span>
               </div>
+              <div className="flex justify-center items-center w-full">
+              <CustomLink href={""} onClick={() => handleReset(true)} variant="default" size="synth" className="w-1/4 text-xs bg-slate-400">Reset</CustomLink>
+              </div>
             </div>
           </div>
         </div>
@@ -153,7 +175,7 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
         <div id="completed-container" className="w-full flex flex-col justify-center items-center gap-8">
           <div className="flex flex-col justify-center items-center gap-2 w-full h-full p-4 border border-solid border-gray-200 sm:max-w-sm bg-white/90 backdrop-blur-sm rounded-lg">
             {/* When complete show: 1) all results, 2) option to do more, 3) explore site (all palettes) */}
-            <h3>nice job!</h3>
+            <h3>nice job! thanks!</h3>
             <p className="text-xs self-start">your swatch:</p>
             {tracksCompleted.map((track) => (
               <ColorInfoBlock track={track} showTitle />
@@ -164,9 +186,11 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
               <CustomLink href={"/palettes"} variant="outline" size="synth" className="w-full">View Palettes</CustomLink>
               <p className="text-xs self-start">listen to the music:</p>
               <CustomLink href={"https://borice.exposed/stolimpico"} variant="outline" size="synth" className="w-full">STOLIMPICO</CustomLink>
+              <p className="text-xs self-start">keep picking:</p>
+              <CustomLink href={""} onClick={() => handleReset(false)} variant="outline" size="synth" className="w-full border-blue-600">Three More Tracks</CustomLink>
             </div>
             {/* Progress bar from 1 to limit */}
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-1">
               <div 
                 className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
                 style={{ width: `${((tracksCompleted.length) / limit) * 100}%` }}
@@ -198,7 +222,11 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
               tracksCompleted={tracksCompleted}
               setTracksCompleted={setTracksCompleted}
               />
-            <CustomLink href={"/palettes"} variant="outline" size="synth" className="w-full">View Palettes</CustomLink>
+            {process.env.NODE_ENV === "development" && (
+              <CustomLink href={"/palettes"} variant="outline" size="synth" className="w-full">
+                View Palettes
+              </CustomLink>
+            )}
           </div>
         </div>
       )}

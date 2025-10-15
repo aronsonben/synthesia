@@ -1,6 +1,6 @@
 "use client" 
 
-import Link from "next/link";
+import { CustomLink } from "@/components/ui/link";
 
 export default function Index() {
   const landingColors = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#073b4c"];
@@ -16,7 +16,7 @@ export default function Index() {
           </div>
           <div className="flex flex-col gap-8 items-start">
             <p className="text-sm">You've run into an error.</p>
-            <Link href="/synthesia">Go home</Link>
+            <CustomLink href="/">Reset</CustomLink>
           </div>
         </div>
       </main>

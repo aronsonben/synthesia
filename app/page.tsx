@@ -12,7 +12,8 @@ export default async function Home() {
   const tracks = await getAllTracksCached();
 
   // Get the first three tracks (for now)
-  const tracksSubset = tracks.slice(0, 3);
+  // const tracksSubset = tracks.slice(0, 6);
+  const tracksSubset = tracks;
   const track = tracksSubset[0];
   // const randomIndex = Math.floor(Math.random() * tracks.length);
   const trackUser = await getUserProfileCached(track.user_id);
