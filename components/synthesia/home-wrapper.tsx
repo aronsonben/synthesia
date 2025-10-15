@@ -107,7 +107,7 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
     >
       {submitted ? (
         <div id="results-container" className="w-full flex flex-col justify-between items-center gap-8 h-[90%]">
-          <div className="flex flex-col justify-center items-center gap-2 w-full h-full p-4 shadow-md sm:max-w-sm bg-white/90 backdrop-blur-sm rounded-lg">
+          <div className="flex flex-col justify-center items-center gap-2 w-full h-full p-4 shadow-md sm:max-w-sm bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg">
             <h3>{currentTrack.title}</h3>
             <div id="user-pick" className="flex flex-col justify-start items-start gap-2 w-full py-4">
               <p className="text-xs self-start">your pick:</p>
@@ -204,7 +204,7 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
         </div>
       ) : (
         <div className="w-full flex flex-col justify-center items-center gap-8 h-[90%]">
-          <div id="campaign-widget" className="flex flex-col justify-center items-center gap-2 w-full p-4 border-gray-200 sm:max-w-sm bg-white/90 backdrop-blur-sm rounded-lg">
+          <div id="campaign-widget" className="flex flex-col justify-center items-center gap-2 w-full p-4 border-gray-200 sm:max-w-sm bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-lg">
             <div className="w-full lex flex-col items-start justify-start gap-2">
               <p className="text-xs">Listen to the track...</p>
             </div>

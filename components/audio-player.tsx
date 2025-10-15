@@ -178,7 +178,7 @@ export default function AudioPlayer({ track, link, user, hideInfo }: AudioPlayer
   }
 
   return (
-    <div className="bg-white border border-solid border-[gainsboro] rounded-xl p-6 max-w-md mx-auto shadow-lg w-full" key={track?.id} >
+    <div className="bg-white border border-solid border-[gainsboro] rounded-xl p-4 max-w-md mx-auto shadow-lg w-full" key={track?.id} >
       {/* Hidden audio element */}
       <audio ref={audioRef} src={audioSrc} key={audioSrc}>
         Your browser does not support the audio element.

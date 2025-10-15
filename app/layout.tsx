@@ -32,9 +32,9 @@ export default function RootLayout({
         >
           <main className="min-h-screen flex flex-col items-center h-full">
             <div className="flex-1 w-full flex flex-col justify-between items-center">
-              <nav className="static top-0 w-full flex justify-center border-b border-b-foreground/10 h-8 bg-white/30 backdrop-blur-md z-50">
-                <div className="w-full max-w-5xl flex justify-center items-center px-5 text-sm">
-                  <div className="flex gap-4 items-center font-semibold">
+                <nav className="static top-0 w-full flex justify-center border-b border-b-foreground/10 h-8 bg-white/30 dark:bg-white/20 backdrop-blur-md z-50">
+                  <div className="w-full max-w-5xl flex justify-center items-center px-5 text-sm">
+                    <div className="flex gap-4 items-center font-semibold">
                     <Link href={"/"}>
                     <div className="flex">
                       {landingColors.map((color, index) => (
@@ -42,14 +42,14 @@ export default function RootLayout({
                       ))}
                     </div>
                     </Link>
-                    {/* <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                       <ThemeSwitcher />
-                    </div> */}
+                    </div>
                     {/* <Link href={"/synthesia/stolimpico-full"} className="w-6 h-6 bg-blue-950 rounded-full" /> */}
+                    </div>
+                    {/* <HeaderAuth /> */}
                   </div>
-                  {/* <HeaderAuth /> */}
-                </div>
-              </nav>
+                </nav>
               <div id="layout-full-container" className="flex-1 flex flex-col gap-20 max-w-5xl w-full min-h-screen">
                 {children}
               </div>
