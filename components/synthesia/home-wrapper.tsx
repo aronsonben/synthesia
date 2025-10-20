@@ -30,6 +30,24 @@ const ColorInfoBlock = ({ track, showTitle = true }: { track: TrackWithAnalysis,
   </div>
 );
 
+const ProgressBar = ({tracksCompleted, limit }: { tracksCompleted: TrackWithAnalysis[]; limit: number;}) => (
+  <>
+  {/* Progress bar from 1 to limit */}
+    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-1">
+      <div
+        className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+        style={{ width: `${(tracksCompleted.length / limit) * 100}%` }}
+      ></div>
+    </div>
+    <div className="w-full flex justify-between text-xs">
+      <span>
+        {tracksCompleted.length} / {limit} completed
+      </span>
+      <span>{limit - tracksCompleted.length} to go</span>
+    </div>
+  </>
+);
+
 export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperProps) {
   const router = useRouter();
   const [hsva, setHsva] = useState({ h: 226, s: 0, v: 100, a: 1 });
@@ -51,7 +69,6 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
   // This null check should eventually be removed once I figure out how to ensure colorAnalysis is never null...?
   let hue = "0", saturation = "0", lightness = "0";
   if(analysis) {
-    console.log("Color analysis found: ", analysis);
     hue = analysis.hue.toFixed(2);
     saturation = (analysis.sat * 100).toFixed(2);
     lightness = (analysis.lum * 100).toFixed(2);
@@ -119,16 +136,15 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
                 </div>
               </div>
             </div>
-            <div id="community-picks" className="flex flex-col justify-start items-start gap-2 w-full py-4">
+            {/* <div id="community-picks" className="flex flex-col justify-start items-start gap-2 w-full py-4">
               <p className="text-xs self-start">community picks:</p>
               <div className="flex justify-start items-start gap-2 w-full">
                 <Swatch swatch={currentTrack.colors.concat(lastSubmittedColor)} size="md" highlightLast />
               </div>
               <p className="text-[9px] self-start">your selection highlighted in <span className="text-[#ffd700]">gold</span>.</p>
-            </div>
-            <div id="insights" className="flex flex-col justify-start items-start gap-2 w-full py-2">
-                {/* 1. Show color analysis of track -- 2. compare user color to average color of track (in color analysis) */}
-                {/* Color Analysis Display */}
+            </div> */}
+            {/* Color Analysis Display */}
+            {/* <div id="insights" className="flex flex-col justify-start items-start gap-2 w-full py-2">
                 <p className="text-xs self-start">color analysis:</p>
                 <div className="flex flex-col flex-wrap w-full">
                   <p className="text-xs">Average Hue: {hue}</p>
@@ -145,26 +161,15 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
                     ></div>
                   </div>
                 </div>
-            </div>
-            <div id="community-picks" className="flex flex-col justify-center items-center gap-2 w-full py-4">
+            </div> */}
+            <div id="track-navigation" className="flex flex-col justify-center items-center gap-2 w-full py-4">
               <Button
                 onClick={handleNextTrack}
                 className="flex-1"
-                size="sm"
               >
                 {tracksCompleted.length == 3 ? "Finish" : "Next Track"}
               </Button>
-              {/* Progress bar from 1 to limit */}
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
-                <div 
-                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                  style={{ width: `${((tracksCompleted.length) / limit) * 100}%` }}
-                ></div>
-              </div>
-              <div className="w-full flex justify-between text-xs">
-                <span>{tracksCompleted.length} / {limit} completed</span>
-                <span>{limit - (tracksCompleted.length)} to go</span>
-              </div>
+              <ProgressBar tracksCompleted={tracksCompleted} limit={limit} />
               <div className="flex justify-center items-center w-full">
               <CustomLink href={""} onClick={() => handleReset(true)} variant="default" size="synth" className="w-1/4 text-xs bg-slate-400">Reset</CustomLink>
               </div>
@@ -178,28 +183,19 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
             <h3>nice job! thanks!</h3>
             <p className="text-xs self-start">your swatch:</p>
             {tracksCompleted.map((track) => (
-              <ColorInfoBlock track={track} showTitle />
+              <ColorInfoBlock track={track} showTitle key={track.id}/>
             ))}
             <div className="flex flex-col justify-start items-start gap-2 py-4 w-full">
-              <h3>Go Deeper</h3>
+              <h3 className="self-center font-bold">Go Deeper</h3>
+              <p className="text-xs self-start">keep picking:</p>
+              <CustomLink href={""} onClick={() => handleReset(false)} variant="outline" size="synth" className="w-full border-blue-600">Three More Tracks</CustomLink>
               <p className="text-xs self-start">explore all palettes:</p>
               <CustomLink href={"/palettes"} variant="outline" size="synth" className="w-full">View Palettes</CustomLink>
               <p className="text-xs self-start">listen to the music:</p>
               <CustomLink href={"https://borice.exposed/stolimpico"} variant="outline" size="synth" className="w-full">STOLIMPICO</CustomLink>
-              <p className="text-xs self-start">keep picking:</p>
-              <CustomLink href={""} onClick={() => handleReset(false)} variant="outline" size="synth" className="w-full border-blue-600">Three More Tracks</CustomLink>
             </div>
             {/* Progress bar from 1 to limit */}
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-1">
-              <div 
-                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                style={{ width: `${((tracksCompleted.length) / limit) * 100}%` }}
-              ></div>
-            </div>
-            <div className="w-full flex justify-between text-xs">
-              <span>{tracksCompleted.length} / {limit} completed</span>
-              <span>{limit - (tracksCompleted.length)} to go</span>
-            </div>
+            <ProgressBar tracksCompleted={tracksCompleted} limit={limit} />
           </div>
         </div>
       ) : (
@@ -223,9 +219,14 @@ export default function HomeWrapper({ track, trackUser, tracks }: HomeWrapperPro
               setTracksCompleted={setTracksCompleted}
               />
             {process.env.NODE_ENV === "development" && (
+              <>
               <CustomLink href={"/palettes"} variant="outline" size="synth" className="w-full">
                 View Palettes
               </CustomLink>
+              {/* Add a toggle that prevents the track from being saved to the db in dev mode...
+                * NOTE-TODO: This is a workaround. Eventually should just use different db environments. */}
+              {/* <span>hey</span> */}
+              </>
             )}
           </div>
         </div>

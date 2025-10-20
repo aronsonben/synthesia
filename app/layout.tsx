@@ -35,13 +35,13 @@ export default function RootLayout({
                 <nav className="static top-0 w-full flex justify-center border-b border-b-foreground/10 h-8 bg-white/30 dark:bg-white/20 backdrop-blur-md z-50">
                   <div className="w-full max-w-5xl flex justify-center items-center px-5 text-sm">
                     <div className="flex gap-4 items-center font-semibold">
-                    <Link href={"/"}>
+                    {/* <Link href={"/"}>
                     <div className="flex">
                       {landingColors.map((color, index) => (
                       <div key={index} className="w-4 h-4" style={{ backgroundColor: color }}></div>
                       ))}
                     </div>
-                    </Link>
+                    </Link> */}
                     <div className="flex items-center gap-2">
                       <ThemeSwitcher />
                     </div>

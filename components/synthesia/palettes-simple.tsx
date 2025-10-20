@@ -67,7 +67,7 @@ export default function PalettesSimple({ tracks }: { tracks: TrackWithAnalysis[]
               className="flex flex-col flex-wrap gap-2 p-4 my-2 border rounded-lg w-full bg-white dark:bg-gray-800 md:max-w-lg "
             >
               <div id="audio_wrapper" className="flex my-2 items-center justify-start content-center gap-4">
-                <AudioPlayerButton link={track.link} track={track} />
+                <AudioPlayer track={track} buttonMode={true} hideInfo={true} />
                 <div className="flex flex-col">
                   <h5>stoic da poet</h5>
                   <h4 className="font-bold">{track.title}</h4>
