@@ -169,7 +169,7 @@ export const getAllPickerPages = async (): Promise<PickerPage[]> => {
 export const getAllTracks = async (): Promise<TrackWithAnalysis[]> => {
   const supabase = await createClient();
 
-  // 1. Fetch tracks with any existing color_analysis row
+  // 1. Fetch tracks with any existing color_analysis row + corresponding color_submissions data
   const { data: tracks, error } = await supabase
     .from("tracks")
     .select("*, color_analysis(*)")
@@ -231,6 +231,97 @@ export const getAllTracks = async (): Promise<TrackWithAnalysis[]> => {
 /** **********************************
 ********** Misc. Functions *********
 *********************************** */
+
+/** I am arbitrary deciding that the proper subset for a user to interact with is three (3) tracks at a time
+ * Thus, this function should eventually handle any chosen subset. Given that this app is, for now, just for me
+ * to use for research purposes, it will be hardcoded to three.
+ */
+
+/** 
+ * Fetch a subset of tracks with pagination support
+ * @param startAfterOrder - The track_order to start after (exclusive). Use 0 to start from beginning
+ * @param limit - Number of tracks to fetch (default: 3)
+ */
+export const getTrackSubset = async (startAfterOrder: number = 0, limit: number = 3): Promise<TrackWithAnalysis[]> => {
+  const supabase = await createClient();
+
+  // Fetch tracks with track_order greater than startAfterOrder, ordered by track_order then by id for consistency
+  const { data: tracks, error } = await supabase
+    .from("tracks")
+    .select("*")
+    .gt('track_order', startAfterOrder)
+    .order('track_order', { ascending: true })
+    .order('id', { ascending: true }) // Secondary sort by id to handle duplicates consistently
+    .limit(limit) as { data: Track[] | null, error: any };
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return tracks || [];
+};
+
+/**
+ * Get the next available track_order value after the current subset
+ * This helps determine what startAfterOrder to use for the next page
+ */
+export const getNextTrackOrder = async (currentTracks: Track[]): Promise<number | null> => {
+  if (currentTracks.length === 0) return null;
+  
+  // Get the highest track_order from current subset
+  const maxOrder = Math.max(...currentTracks.map(track => track.track_order));
+  
+  const supabase = await createClient();
+  
+  // Check if there are more tracks after this order
+  const { data: nextTrack, error } = await supabase
+    .from("tracks")
+    .select("track_order")
+    .gt('track_order', maxOrder)
+    .order('track_order', { ascending: true })
+    .limit(1)
+    .single();
+
+  if (error || !nextTrack) {
+    return null; // No more tracks
+  }
+
+  return maxOrder; // Return the current max to use as startAfterOrder for next page
+};
+
+/**
+ * Check if there are more tracks available after the current subset
+ */
+export const hasMoreTracks = async (currentTracks: Track[]): Promise<boolean> => {
+  const nextOrder = await getNextTrackOrder(currentTracks);
+  return nextOrder !== null;
+};
+
+/**
+ * Get the track_order to start from for the previous page
+ * @param currentStartAfter - Current page's startAfter value
+ * @param limit - Number of tracks per page
+ */
+export const getPreviousPageStartAfter = async (currentStartAfter: number, limit: number = 3): Promise<number> => {
+  const supabase = await createClient();
+
+  // Get tracks before current startAfter, ordered desc, limited to our page size
+  const { data: previousTracks, error } = await supabase
+    .from("tracks")
+    .select("track_order")
+    .lte('track_order', currentStartAfter)
+    .order('track_order', { ascending: false })
+    .order('id', { ascending: false })
+    .limit(limit + 1); // +1 to find the boundary
+
+  if (error || !previousTracks || previousTracks.length <= limit) {
+    return 0; // Return to first page
+  }
+
+  // The boundary is the track_order of the (limit+1)th track
+  return previousTracks[limit].track_order;
+};
+
 
 
 /** Retrieve list of tracks associated with the picker page page_name */
