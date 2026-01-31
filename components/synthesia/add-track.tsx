@@ -5,16 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addTrack } from "@/actions/synthesia/actions";
 import { Label } from "../ui/label";
-import AWS from 'aws-sdk';
-import { PutObjectRequest } from "aws-sdk/clients/s3";
+import { S3Client, PutObjectRequest, PutObjectCommand } from "@aws-sdk/client-s3";
 
-AWS.config.update({
-  accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+// AWS.config.update({
+//   accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+//   region: process.env.NEXT_PUBLIC_AWS_REGION,
+// });
+
+// const s3 = new AWS.S3();
+const s3 = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || "",
+  },
 });
-
-const s3 = new AWS.S3();
 
 export default function AddTrack() {
   const ref = useRef<HTMLFormElement>(null);
@@ -53,9 +59,10 @@ export default function AddTrack() {
 
     let uploadLink = "";
     try {
-      const uploadResult = await s3.upload(params).promise();
-      console.log('File uploaded successfully:', uploadResult.Location);
-      uploadLink = uploadResult.Location;
+      // const uploadResult = await s3.upload(params).promise();
+      const uploadResult = await s3.send(new PutObjectCommand(params));
+      console.log('File uploaded successfully:', uploadResult);
+      uploadLink = uploadResult.ETag || "";
     } catch (error) {
       console.error('Error uploading file:', error);
     }

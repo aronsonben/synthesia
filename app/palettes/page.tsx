@@ -1,4 +1,5 @@
 import PalettesSimple from "@/components/synthesia/palettes-simple";
+import PalettesPPT from "@/components/synthesia/palettes-ppt";
 import { 
   getAllTracks} 
 from "@/utils/supabase/fetchData";
@@ -17,5 +18,6 @@ export default async function SimplePalettesPage() {
     throw new Error("No tracks found for this page!");
   }
 
-  return <PalettesSimple tracks={tracks} />;
+  // return <PalettesSimple tracks={tracks} />;
+  return <PalettesPPT tracks={tracks} />;
 }

@@ -26,12 +26,12 @@ export default function AudioPlayer({ track, link, user, hideInfo, buttonMode = 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) {
-      console.log("Audio element not found.");
+      // console.log("Audio element not found.");
       return;
     }
 
-    console.log("[AudioPlayer] Initializing with source:", audioSrc);
-    console.log("[AudioPlayer] Duration: ", audio.duration);
+    // console.log("[AudioPlayer] Initializing with source:", audioSrc);
+    // console.log("[AudioPlayer] Duration: ", audio.duration);
 
     // Reset states when audio source changes
     setIsLoading(true);
@@ -40,31 +40,31 @@ export default function AudioPlayer({ track, link, user, hideInfo, buttonMode = 
 
     // Set progress to 30 seconds in unless track is less than 60 seconds
     if(audio.duration > 60) {
-      console.log("[AudioPlayer] Duration is greater than 60 seconds. Progress is: ", progress);
+      // console.log("[AudioPlayer] Duration is greater than 60 seconds. Progress is: ", progress);
       setProgress(30);
     } else {
       setProgress(0);
     }
 
     const handleLoadStart = () => {
-      console.log("[AudioPlayer] loadstart: Started loading audio");
+      // console.log("[AudioPlayer] loadstart: Started loading audio");
       setIsLoading(true);
     };
 
     const handleLoadedMetadata = () => {
-      console.log("[AudioPlayer] loadedmetadata: Duration set to", audio.duration);
+      // console.log("[AudioPlayer] loadedmetadata: Duration set to", audio.duration);
       setDuration(audio.duration);
       setProgress(30);
       setCurrentTime(30);
     };
 
     const handleCanPlay = () => {
-      console.log("[AudioPlayer] canplay: Audio is ready to play");
+      // console.log("[AudioPlayer] canplay: Audio is ready to play");
       setIsLoading(false);
     };
 
     const handleLoadedData = () => {
-      console.log("[AudioPlayer] loadeddata: Audio data is loaded");
+      // console.log("[AudioPlayer] loadeddata: Audio data is loaded");
     };
 
     const handleTimeUpdate = () => {
@@ -74,7 +74,7 @@ export default function AudioPlayer({ track, link, user, hideInfo, buttonMode = 
     };
 
     const handleEnded = () => {
-      console.log("[AudioPlayer] ended: Playback finished");
+      // console.log("[AudioPlayer] ended: Playback finished");
       setIsPlaying(false);
       setCurrentTime(30);
       setProgress(30);
@@ -107,16 +107,16 @@ export default function AudioPlayer({ track, link, user, hideInfo, buttonMode = 
     };
 
     const handleStalled = () => {
-      console.log("[AudioPlayer] stalled: Playback stalled");
+      // console.log("[AudioPlayer] stalled: Playback stalled");
       setError('Audio playback stalled. Check your connection.');
     };
 
     const handleSuspend = () => {
-      console.log("[AudioPlayer] suspend: Browser has stopped loading");
+      // console.log("[AudioPlayer] suspend: Browser has stopped loading");
     };
 
     const handleWaiting = () => {
-      console.log("[AudioPlayer] waiting: Playback waiting for data");
+      // console.log("[AudioPlayer] waiting: Playback waiting for data");
       setIsLoading(true);
     };
 
@@ -159,7 +159,7 @@ export default function AudioPlayer({ track, link, user, hideInfo, buttonMode = 
   const togglePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
-    console.log("[AudioPlayer] Toggling play/pause. Audio position is: ", audio.currentTime);
+    // console.log("[AudioPlayer] Toggling play/pause. Audio position is: ", audio.currentTime);
 
     if (isPlaying) {
       audio.pause();
@@ -170,7 +170,7 @@ export default function AudioPlayer({ track, link, user, hideInfo, buttonMode = 
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log("Progress bar clicked");
+    // console.log("Progress bar clicked");
     const audio = audioRef.current;
     if (!audio || duration == null) return;
 
